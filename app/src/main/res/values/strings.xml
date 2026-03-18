@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_tictactoe">Tres en Raya</string>
+    <string name="turn_player_x">Turno del Jugador X</string>
+    <string name="turn_player_o">Turno del Jugador O</string>
+    <string name="player_x_wins">¡El Jugador X Gana!</string>
+    <string name="player_o_wins">¡El Jugador O Gana!</string>
+    <string name="game_draw">¡Es un Empate!</string>
+    <string name="reset_game">Reiniciar Juego</string>
+    <string name="title_memory_game">Juego de Memoria</string>
+    <string name="memory_start_prompt">Encuentra todos los pares</string>
+    <string name="memory_pair_found">¡Par encontrado!</string>
+    <string name="memory_no_match">No es un par. ¡Intenta de nuevo!</string>
+    <string name="memory_win">¡Felicidades! ¡Has encontrado todos los pares!</string>
+    <string name="enter_your_guess">Introduce tu número</string>
+    <string name="check_button">Comprobar</string>
+    <string name="play_again">Jugar de nuevo</string>
+
+    <!-- Nuevas cadenas añadidas -->
+    <string name="app_name">LudoMix</string>
+    <string name="app_logo">Logotipo de LudoMix</string>
+    <string name="title_guess_number">Adivina el Número</string>
+    <string name="title_rps">Piedra, Papel o Tijera</string>
+    <string name="rps_tie">Empate: ambos eligieron %1$s</string>
+    <string name="rps_win">Ganaste: %1$s vence a %2$s</string>
+    <string name="rps_lose">Perdiste: %1$s vence a %2$s</string>
+    <string name="rock">Piedra</string>
+    <string name="paper">Papel</string>
+    <string name="scissors">Tijera</string>
+    <string name="score_text">Puntuación - Tú: %1$d CPU: %2$d</string>
+    <string name="rps_start_prompt">Elige Piedra, Papel o Tijera</string>
+
+    <!-- GuessNumberActivity strings -->
+    <string name="guess_a_number_prompt">Adivina un número del 1 al 100</string>
+    <string name="empty_guess_error">Por favor introduce un número</string>
+    <string name="invalid_number_error">Introduce un número válido</string>
+    <string name="correct_guess">¡Correcto! Has adivinado el número.</string>
+    <string name="guess_too_low">Demasiado bajo. Intenta otra vez.</string>
+    <string name="guess_too_high">Demasiado alto. Intenta otra vez.</string>
+
+    <!-- Botón volver al menú -->
+    <string name="back_to_menu">Volver al menú</string>
+
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="@color/background_light"
+    tools:context=".MemoryGameActivity">
+
+    <TextView
+        android:id="@+id/txtMemoryStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/memory_start_prompt"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <GridLayout
+        android:id="@+id/memoryGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="4"
+        android:alignmentMode="alignMargins"
+        android:columnOrderPreserved="false">
+
+        <!-- Los botones se añadirán aquí mediante programación para mayor flexibilidad -->
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/btnMemoryReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_game"
+        android:onClick="resetMemoryGame"
+        android:layout_marginTop="24dp"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+    <!-- Botón para volver al menú (ancho reducido) -->
+    <Button
+        android:id="@+id/btnBackToMenu"
+        style="@style/MenuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_gravity="center"
+        android:text="@string/back_to_menu" />
+
+</LinearLayout>
