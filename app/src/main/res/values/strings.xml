@@ -41,4 +41,31 @@
     <!-- Botón volver al menú -->
     <string name="back_to_menu">Volver al menú</string>
 
+    <!-- Cadenas para la selección de modo TicTacToe -->
+    <string name="mode_select_title">Selecciona el modo</string>
+    <string name="mode_pvp">Jugador vs Jugador</string>
+    <string name="mode_pvc">Jugador vs CPU</string>
+
+    <!-- Emojis y descripciones para RPS -->
+    <string name="emoji_rock">✊</string>
+    <string name="emoji_paper">📄</string>
+    <string name="emoji_scissors">✂️</string>
+    <string name="desc_player_choice">Elección del jugador</string>
+    <string name="desc_cpu_choice">Elección de la CPU</string>
+
+    <!-- Cadenas para login y scores -->
+    <string name="login_title">Cuenta</string>
+    <string name="login_signin">Iniciar sesión</string>
+    <string name="login_register">Registrar</string>
+    <string name="login_username_hint">Usuario</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="generic_back">Volver</string>
+
+    <string name="menu_title">LudoMix</string>
+    <string name="menu_guess_number">Adivina el Número</string>
+    <string name="menu_rps">Piedra, Papel o Tijera</string>
+    <string name="menu_ttt">Tres en Raya</string>
+    <string name="menu_memory">Juego de Memoria</string>
+    <string name="menu_scores">Puntuaciones</string>
+
 </resources>

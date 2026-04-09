@@ -17,7 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/guideline_top"
-        android:contentDescription="Logotipo de LudoMix" />
+        android:contentDescription="@string/app_logo" />
+
+    <!-- Botón Iniciar Sesión arriba-derecha -->
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_signin"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_top"
@@ -30,7 +41,7 @@
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LudoMix"
+        android:text="@string/menu_title"
         android:textSize="34sp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimary"
@@ -41,7 +52,7 @@
     <Button
         android:id="@+id/btnGuessNumber"
         style="@style/MenuButton"
-        android:text="Adivina el Número"
+        android:text="@string/menu_guess_number"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -49,7 +60,7 @@
     <Button
         android:id="@+id/btnRps"
         style="@style/MenuButton"
-        android:text="Piedra, Papel o Tijera"
+        android:text="@string/menu_rps"
         app:layout_constraintTop_toBottomOf="@id/btnGuessNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -57,7 +68,7 @@
     <Button
         android:id="@+id/btnTicTacToe"
         style="@style/MenuButton"
-        android:text="Tres en Raya"
+        android:text="@string/menu_ttt"
         app:layout_constraintTop_toBottomOf="@id/btnRps"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -65,10 +76,19 @@
     <Button
         android:id="@+id/btnMemoryGame"
         style="@style/MenuButton"
-        android:text="Juego de Memoria"
+        android:text="@string/menu_memory"
         app:layout_constraintTop_toBottomOf="@id/btnTicTacToe"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Botón Puntuaciones, oculto por defecto (visible cuando hay sesión) -->
+    <Button
+        android:id="@+id/btnScores"
+        style="@style/MenuButton"
+        android:text="@string/menu_scores"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btnMemoryGame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

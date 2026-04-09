@@ -26,6 +26,11 @@
         <activity android:name=".RpsActivity" />
         <activity android:name=".TicTacToeActivity" />
         <activity android:name=".MemoryGameActivity" />
+        <activity android:name=".ModeSelectionActivity" />
+
+        <!-- Nuevas actividades -->
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".ScoresActivity" />
 
     </application>
 

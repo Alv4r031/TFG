@@ -18,6 +18,8 @@ public class RpsActivity extends AppCompatActivity {
 
     private TextView resultTextView;
     private TextView scoreTextView; // Opcional: para llevar la puntuación
+    private TextView playerChoiceView;
+    private TextView cpuChoiceView;
 
     private int playerScore = 0;
     private int cpuScore = 0;
@@ -33,6 +35,9 @@ public class RpsActivity extends AppCompatActivity {
 
         if (resTxtResult != 0) resultTextView = findViewById(resTxtResult);
         if (resTxtScore != 0) scoreTextView = findViewById(resTxtScore);
+
+        playerChoiceView = findViewById(R.id.playerChoiceView);
+        cpuChoiceView = findViewById(R.id.cpuChoiceView);
 
         if (resBtnBack != 0) {
             Button btnBack = findViewById(resBtnBack);
@@ -58,6 +63,10 @@ public class RpsActivity extends AppCompatActivity {
 
     private void play(int playerChoice) {
         int cpuChoice = new Random().nextInt(3); // Genera 0, 1 o 2
+
+        // Mostrar emojis en las vistas grandes
+        if (playerChoiceView != null) playerChoiceView.setText(choiceToEmoji(playerChoice));
+        if (cpuChoiceView != null) cpuChoiceView.setText(choiceToEmoji(cpuChoice));
 
         String resultText;
 
@@ -97,6 +106,19 @@ public class RpsActivity extends AppCompatActivity {
         }
     }
 
+    private String choiceToEmoji(int choice) {
+        switch (choice) {
+            case ROCK:
+                return "✊";
+            case PAPER:
+                return "📄";
+            case SCISSORS:
+                return "✂️";
+            default:
+                return "";
+        }
+    }
+
     /**
      * Actualiza el TextView de la puntuación.
      */
@@ -113,5 +135,7 @@ public class RpsActivity extends AppCompatActivity {
         cpuScore = 0;
         updateScoreText();
         if (resultTextView != null) resultTextView.setText(getString(R.string.rps_start_prompt));
+        if (playerChoiceView != null) playerChoiceView.setText("");
+        if (cpuChoiceView != null) cpuChoiceView.setText("");
     }
 }

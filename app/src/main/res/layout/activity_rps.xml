@@ -24,34 +24,70 @@
         android:text="@string/score_text"
         android:layout_marginBottom="24dp" />
 
+    <!-- Área central: muestra la elección grande del jugador y la CPU -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginBottom="24dp">
 
-        <Button
-            android:id="@id/btnRock"
+        <TextView
+            android:id="@+id/playerChoiceView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/rock"
-            android:onClick="playRock" />
+            android:text=""
+            android:textSize="72sp"
+            android:layout_marginEnd="48dp"
+            android:contentDescription="@string/desc_player_choice" />
 
-        <Button
-            android:id="@id/btnPaper"
+        <TextView
+            android:id="@+id/cpuChoiceView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/paper"
+            android:text=""
+            android:textSize="72sp"
+            android:contentDescription="@string/desc_cpu_choice" />
+
+    </LinearLayout>
+
+    <!-- Botones con emojis representativos -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        style="?android:attr/buttonBarStyle"
+        android:layout_marginTop="40dp">
+
+        <Button
+            android:id="@+id/btnRock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/emoji_rock"
+            android:textSize="28sp"
+            android:onClick="playRock"
+            style="?android:attr/buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/btnPaper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/emoji_paper"
+            android:textSize="28sp"
             android:onClick="playPaper"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="24dp"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
-            android:id="@id/btnScissors"
+            android:id="@+id/btnScissors"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/scissors"
+            android:text="@string/emoji_scissors"
+            android:textSize="28sp"
             android:onClick="playScissors"
-            android:layout_marginStart="12dp" />
+            android:layout_marginStart="24dp"
+            style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
     <!-- Botón para volver al menú (ancho reducido) -->
@@ -60,10 +96,10 @@
         style="@style/MenuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:layout_gravity="center"
         android:text="@string/back_to_menu" />
 
 </LinearLayout>
