@@ -1,9 +1,12 @@
 package com.example.ludomix;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,10 +27,15 @@ public class RpsActivity extends AppCompatActivity {
     private int playerScore = 0;
     private int cpuScore = 0;
 
+    private SharedPreferences prefs;
+    private static final String PREFS = "ludomix_prefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rps);
+
+        prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         int resTxtResult = getResources().getIdentifier("txtResult", "id", getPackageName());
         int resTxtScore = getResources().getIdentifier("txtScore", "id", getPackageName());
@@ -71,6 +79,7 @@ public class RpsActivity extends AppCompatActivity {
         String resultText;
 
         // 3. Lógica completa del juego
+        boolean playerWon = false;
         if (playerChoice == cpuChoice) {
             // Empate
             resultText = getString(R.string.rps_tie, choiceToString(playerChoice));
@@ -79,6 +88,7 @@ public class RpsActivity extends AppCompatActivity {
                 (playerChoice == SCISSORS && cpuChoice == PAPER)) {
             // El jugador gana
             playerScore++;
+            playerWon = true;
             resultText = getString(R.string.rps_win, choiceToString(playerChoice), choiceToString(cpuChoice));
         } else {
             // La CPU gana
@@ -88,6 +98,19 @@ public class RpsActivity extends AppCompatActivity {
 
         if (resultTextView != null) resultTextView.setText(resultText);
         updateScoreText();
+
+        // Guardar estadísticas locales
+        try {
+            int plays = prefs.getInt("plays_rps", 0);
+            int wins = prefs.getInt("wins_rps", 0);
+            plays = plays + 1;
+            if (playerWon) wins = wins + 1;
+            prefs.edit().putInt("plays_rps", plays).putInt("wins_rps", wins).apply();
+            // Feedback al usuario
+            Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

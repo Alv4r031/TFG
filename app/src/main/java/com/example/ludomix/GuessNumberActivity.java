@@ -1,9 +1,12 @@
 package com.example.ludomix;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
@@ -15,10 +18,15 @@ public class GuessNumberActivity extends AppCompatActivity {
     private Button btnCheck;
     private Button btnPlayAgain;
 
+    private SharedPreferences prefs;
+    private static final String PREFS = "ludomix_prefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess);
+
+        prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         // findViewById en lugar de ViewBinding
         txtResult = findViewById(R.id.txtResult);
@@ -64,10 +72,23 @@ public class GuessNumberActivity extends AppCompatActivity {
                 txtResult.setText(getString(R.string.correct_guess));
                 txtGuess.setEnabled(false);
                 btnCheck.setEnabled(false);
+
+                // Actualizar estadísticas locales: plays +1 y wins +1
+                int plays = prefs.getInt("plays_guess", 0);
+                int wins = prefs.getInt("wins_guess", 0);
+                prefs.edit().putInt("plays_guess", plays + 1).putInt("wins_guess", wins + 1).apply();
+                // Feedback al usuario
+                Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
+
             } else if (guess < secretNumber) {
                 txtResult.setText(getString(R.string.guess_too_low));
+
+                // No incrementar plays aquí: todavía no ha terminado la partida
+
             } else {
                 txtResult.setText(getString(R.string.guess_too_high));
+
+                // No incrementar plays aquí: todavía no ha terminado la partida
             }
         } catch (NumberFormatException e) {
             txtResult.setText(getString(R.string.invalid_number_error));

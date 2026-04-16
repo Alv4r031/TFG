@@ -1,5 +1,7 @@
 package com.example.ludomix;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -26,11 +28,15 @@ public class TicTacToeActivity extends AppCompatActivity {
     private boolean humanIsX = true; // meaningful only if PVC
 
     private Random random = new Random();
+    private SharedPreferences prefs;
+    private static final String PREFS = "ludomix_prefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tictactoe);
+
+        prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         txtStatus = findViewById(R.id.txtStatus);
 
@@ -154,6 +160,32 @@ public class TicTacToeActivity extends AppCompatActivity {
         txtStatus.setText(message);
         for (Button button : buttons) {
             button.setEnabled(false); // Deshabilitar tablero
+        }
+
+        // Actualizar estadísticas: contar la partida jugada
+        try {
+            int plays = prefs.getInt("plays_ttt", 0);
+            prefs.edit().putInt("plays_ttt", plays + 1).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Determinar si hay ganador y si el humano (en PVC) es el ganador -> aumentar wins
+        if ("PVC".equals(gameMode)) {
+            String winnerText = message;
+            boolean humanWon = false;
+            if (winnerText != null) {
+                if (winnerText.contains("X") && humanIsX) humanWon = true;
+                if (winnerText.contains("O") && !humanIsX) humanWon = true;
+            }
+            if (humanWon) {
+                try {
+                    int wins = prefs.getInt("wins_ttt", 0);
+                    prefs.edit().putInt("wins_ttt", wins + 1).apply();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

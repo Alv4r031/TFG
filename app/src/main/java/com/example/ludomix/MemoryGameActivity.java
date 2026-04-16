@@ -1,5 +1,7 @@
 package com.example.ludomix;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,10 +30,15 @@ public class MemoryGameActivity extends AppCompatActivity {
     private TextView statusTextView;
     private GridLayout memoryGrid;
 
+    private SharedPreferences prefs;
+    private static final String PREFS = "ludomix_prefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory_game);
+
+        prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         statusTextView = findViewById(R.id.txtMemoryStatus);
         memoryGrid = findViewById(R.id.memoryGrid);
@@ -143,6 +150,16 @@ public class MemoryGameActivity extends AppCompatActivity {
 
             if (pairsFound == NUM_CARDS / 2) {
                 statusTextView.setText(R.string.memory_win);
+
+                // Juego completado: actualizar estadísticas
+                try {
+                    int plays = prefs.getInt("plays_memory", 0);
+                    int wins = prefs.getInt("wins_memory", 0);
+                    prefs.edit().putInt("plays_memory", plays + 1).putInt("wins_memory", wins + 1).apply();
+                    Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             resetTurn();

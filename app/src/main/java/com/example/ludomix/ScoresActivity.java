@@ -20,12 +20,23 @@ public class ScoresActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        TextView txtContent = findViewById(R.id.txtScoresContent);
         Button btnBack = findViewById(R.id.btnScoresBack);
-        btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+
+        loadStats();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadStats();
+    }
+
+    private void loadStats() {
+        TextView txtContent = findViewById(R.id.txtScoresContent);
+        if (txtContent == null) return;
 
         // Leer estadísticas almacenadas localmente (demo)
-        // Se espera claves de ejemplo: plays_rps, wins_rps, plays_ttt, wins_ttt, plays_guess, wins_guess, plays_memory, wins_memory
         StringBuilder sb = new StringBuilder();
         sb.append("Piedra,Papel o Tijera:\n");
         sb.append("  Partidas: ").append(prefs.getInt("plays_rps", 0)).append("\n");

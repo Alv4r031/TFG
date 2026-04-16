@@ -60,6 +60,7 @@
     <string name="login_username_hint">Usuario</string>
     <string name="login_password_hint">Contraseña</string>
     <string name="generic_back">Volver</string>
+    <string name="login_logout">Cerrar sesión</string>
 
     <string name="menu_title">LudoMix</string>
     <string name="menu_guess_number">Adivina el Número</string>
