@@ -16,6 +16,9 @@
     <string name="check_button">Comprobar</string>
     <string name="play_again">Jugar de nuevo</string>
 
+    <!-- Mensaje con número de turnos al acertar en GuessNumberActivity -->
+    <string name="correct_guess_in_turns">¡Correcto! Has adivinado el número en %1$d turnos.</string>
+
     <!-- Nuevas cadenas añadidas -->
     <string name="app_name">LudoMix</string>
     <string name="app_logo">Logotipo de LudoMix</string>
@@ -68,5 +71,11 @@
     <string name="menu_ttt">Tres en Raya</string>
     <string name="menu_memory">Juego de Memoria</string>
     <string name="menu_scores">Puntuaciones</string>
+
+    <!-- Strings para selector de dificultad -->
+    <string name="select_difficulty">Selecciona dificultad</string>
+    <string name="easy">Fácil</string>
+    <string name="medium">Medio</string>
+    <string name="hard">Difícil</string>
 
 </resources>

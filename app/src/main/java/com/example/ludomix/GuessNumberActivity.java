@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
@@ -17,6 +16,8 @@ public class GuessNumberActivity extends AppCompatActivity {
     private EditText txtGuess;
     private Button btnCheck;
     private Button btnPlayAgain;
+
+    private int attempts = 0; // contador de intentos
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
@@ -51,6 +52,7 @@ public class GuessNumberActivity extends AppCompatActivity {
 
     private void startNewGame() {
         secretNumber = new Random().nextInt(100) + 1;
+        attempts = 0; // resetear contador
         txtResult.setText(getString(R.string.guess_a_number_prompt));
         txtGuess.setText("");
         txtGuess.setEnabled(true);
@@ -68,8 +70,13 @@ public class GuessNumberActivity extends AppCompatActivity {
         try {
             int guess = Integer.parseInt(guessString);
 
+            // Contabilizar intento válido
+            attempts++;
+
             if (guess == secretNumber) {
-                txtResult.setText(getString(R.string.correct_guess));
+                // Mostrar mensaje con número de turnos
+                String msg = getString(R.string.correct_guess_in_turns, attempts);
+                txtResult.setText(msg);
                 txtGuess.setEnabled(false);
                 btnCheck.setEnabled(false);
 
@@ -77,8 +84,6 @@ public class GuessNumberActivity extends AppCompatActivity {
                 int plays = prefs.getInt("plays_guess", 0);
                 int wins = prefs.getInt("wins_guess", 0);
                 prefs.edit().putInt("plays_guess", plays + 1).putInt("wins_guess", wins + 1).apply();
-                // Feedback al usuario
-                Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
 
             } else if (guess < secretNumber) {
                 txtResult.setText(getString(R.string.guess_too_low));

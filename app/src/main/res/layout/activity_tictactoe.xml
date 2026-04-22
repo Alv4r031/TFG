@@ -1,65 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
-    android:background="@color/background_light"
+    android:background="@color/background_dark"
     tools:context=".TicTacToeActivity">
 
+    <!-- Contenido principal (antes root LinearLayout) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/turn_player_x"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginBottom="24dp"/>
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="3"
+            android:background="@color/ticTacToeGrid">
+
+            <!-- Fila 1 -->
+            <Button android:id="@+id/btn0" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn1" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn2" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <!-- Fila 2 -->
+            <Button android:id="@+id/btn3" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn4" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn5" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <!-- Fila 3 -->
+            <Button android:id="@+id/btn6" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn7" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+            <Button android:id="@+id/btn8" style="@style/TicTacToeButton" android:onClick="onCellClick" />
+
+        </GridLayout>
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reset_game"
+            android:onClick="resetGame"
+            android:layout_marginTop="24dp"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <!-- Botón para volver al menú (ancho reducido) -->
+        <Button
+            android:id="@+id/btnBackToMenu"
+            style="@style/MenuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/back_to_menu"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <!-- Overlay central que muestra temporalmente la X u O -->
     <TextView
-        android:id="@+id/txtStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/turn_player_x"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
-
-    <GridLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:columnCount="3"
-        android:rowCount="3"
-        android:background="@color/ticTacToeGrid">
-
-        <!-- Fila 1 -->
-        <Button android:id="@+id/btn0" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn1" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn2" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <!-- Fila 2 -->
-        <Button android:id="@+id/btn3" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn4" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn5" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <!-- Fila 3 -->
-        <Button android:id="@+id/btn6" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn7" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-        <Button android:id="@+id/btn8" style="@style/TicTacToeButton" android:onClick="onCellClick" />
-
-    </GridLayout>
-
-    <Button
-        android:id="@+id/btnReset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/reset_game"
-        android:onClick="resetGame"
-        android:layout_marginTop="24dp"
-        style="@style/Widget.AppCompat.Button.Colored" />
-
-    <!-- Botón para volver al menú (ancho reducido) -->
-    <Button
-        android:id="@+id/btnBackToMenu"
-        style="@style/MenuButton"
+        android:id="@+id/overlayIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:text="@string/back_to_menu"
-        android:textSize="18sp" />
+        android:visibility="gone"
+        android:textSize="96sp"
+        android:textStyle="bold"
+        android:textColor="@color/textColorPrimary"
+        android:alpha="0" />
 
-</LinearLayout>
+</FrameLayout>

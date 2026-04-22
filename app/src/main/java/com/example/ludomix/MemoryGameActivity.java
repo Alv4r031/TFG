@@ -19,7 +19,8 @@ import java.util.List;
 
 public class MemoryGameActivity extends AppCompatActivity {
 
-    private final int NUM_CARDS = 16;
+    // Número de cartas ahora configurable según dificultad
+    private int numCards = 16;
     private final List<String> cardValues = new ArrayList<>();
     private final List<Button> cards = new ArrayList<>();
 
@@ -51,6 +52,32 @@ public class MemoryGameActivity extends AppCompatActivity {
             return;
         }
 
+        // Leer dificultad enviada por MemoryDifficultyActivity
+        try {
+            int difficulty = getIntent().getIntExtra(MemoryDifficultyActivity.EXTRA_DIFFICULTY, MemoryDifficultyActivity.DIFF_MEDIUM);
+            switch (difficulty) {
+                case MemoryDifficultyActivity.DIFF_EASY:
+                    // Fácil = 2x2 (4 cartas)
+                    numCards = 4; // 2x2
+                    memoryGrid.setColumnCount(2);
+                    break;
+                case MemoryDifficultyActivity.DIFF_HARD:
+                    // Cambiado a 5x5 para mejor visualización
+                    numCards = 25; // 5x5
+                    memoryGrid.setColumnCount(5);
+                    break;
+                case MemoryDifficultyActivity.DIFF_MEDIUM:
+                default:
+                    numCards = 16; // 4x4
+                    memoryGrid.setColumnCount(4);
+                    break;
+            }
+        } catch (Exception e) {
+            // Fallback por si algo falla
+            numCards = 16;
+            memoryGrid.setColumnCount(4);
+        }
+
         // Asegurar que haya columnas (fallback si el atributo no se leyó)
         if (memoryGrid.getColumnCount() <= 0) {
             memoryGrid.setColumnCount(4);
@@ -68,23 +95,49 @@ public class MemoryGameActivity extends AppCompatActivity {
         memoryGrid.removeAllViews();
         statusTextView.setText(R.string.memory_start_prompt);
 
-        // Preparar los valores de las cartas (8 pares)
-        String[] symbols = {"🐶", "🐱", "🐵", "🦁", "🐯", "🦊", "🐨", "🐼"};
+        // Símbolos disponibles (suficientes hasta 36 cartas -> 18 pares)
+        String[] symbols = {"🐶", "🐱", "🐵", "🦁", "🐯", "🦊", "🐨", "🐼", "🐸", "🐔", "🦄", "🐷", "🐮", "🐗", "🐝", "🦋", "🐞", "🐌", "🐙", "🐬"};
         cardValues.clear();
-        for (String symbol : symbols) {
+
+        int pairsNeeded = numCards / 2; // number of full pairs
+        // Tomar los primeros pairsNeeded símbolos y duplicarlos
+        for (int i = 0; i < pairsNeeded; i++) {
+            String symbol = symbols[i % symbols.length];
             cardValues.add(symbol);
             cardValues.add(symbol);
         }
+
+        // Si numCards es impar, añadimos una carta comodín (sin pareja)
+        if (numCards % 2 == 1) {
+            cardValues.add("★"); // carta comodín — nunca empareja
+        }
+
         Collections.shuffle(cardValues);
 
-        // Tamaño en px para cada carta (80dp)
-        final int sizeDp = 80;
+        // Determinar tamaño en dp según columnas para que el tablero quepa mejor en pantalla
+        int cols = memoryGrid.getColumnCount();
+        int sizeDp;
+        if (cols >= 6) {
+            sizeDp = 48; // muchas cartas -> cartas más pequeñas
+        } else if (cols == 5) {
+            sizeDp = 60; // 5 columnas -> tamaño intermedio
+        } else if (cols == 4) {
+            sizeDp = 72;
+        } else if (cols == 3) {
+            sizeDp = 88;
+        } else {
+            sizeDp = 80;
+        }
+
         final float scale = getResources().getDisplayMetrics().density;
         final int sizePx = (int) (sizeDp * scale + 0.5f);
 
+        // Calcular filas necesarias y asignarlas para evitar excepciones
+        int rowsNeeded = (numCards + cols - 1) / cols;
+        memoryGrid.setRowCount(rowsNeeded);
+
         // Crear y añadir los botones (cartas) al GridLayout
-        int cols = memoryGrid.getColumnCount();
-        for (int i = 0; i < NUM_CARDS; i++) {
+        for (int i = 0; i < numCards; i++) {
             Button card = new Button(this);
             card.setTag(cardValues.get(i)); // Guardamos el valor en el tag
             card.setOnClickListener(this::revealCard);
@@ -96,13 +149,13 @@ public class MemoryGameActivity extends AppCompatActivity {
             // Especificar fila y columna explícitamente
             int col = i % cols;
             int row = i / cols;
-            params.columnSpec = GridLayout.spec(col);
-            params.rowSpec = GridLayout.spec(row);
-            params.setMargins(8, 8, 8, 8);
+            params.columnSpec = GridLayout.spec(col, 1);
+            params.rowSpec = GridLayout.spec(row, 1);
+            params.setMargins(6, 6, 6, 6);
             card.setLayoutParams(params);
 
             // Ajustes de texto y apariencia
-            card.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            card.setTextSize(TypedValue.COMPLEX_UNIT_SP, Math.max(12, sizeDp / 4));
             card.setTextColor(getResources().getColor(android.R.color.black));
             card.setBackgroundResource(R.drawable.card_background);
             card.setText(""); // Ocultar el contenido hasta que se revele
@@ -140,7 +193,10 @@ public class MemoryGameActivity extends AppCompatActivity {
     }
 
     private void checkForMatch() {
-        if (firstCard.getTag().equals(secondCard.getTag())) {
+        // Si alguna carta es el comodín (★) no puede emparejar
+        Object tag1 = firstCard.getTag();
+        Object tag2 = secondCard.getTag();
+        if (tag1 != null && tag2 != null && tag1.equals(tag2) && !"★".equals(tag1)) {
             // ¡Es un par!
             statusTextView.setText(R.string.memory_pair_found);
             firstCard.setEnabled(false); // Deshabilita para que no se pueda volver a pulsar
@@ -148,7 +204,7 @@ public class MemoryGameActivity extends AppCompatActivity {
 
             pairsFound++;
 
-            if (pairsFound == NUM_CARDS / 2) {
+            if (pairsFound == numCards / 2) {
                 statusTextView.setText(R.string.memory_win);
 
                 // Juego completado: actualizar estadísticas

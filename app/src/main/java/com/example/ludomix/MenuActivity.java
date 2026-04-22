@@ -58,7 +58,7 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         btnMemoryGame.setOnClickListener(v -> {
-            Intent intent = new Intent(MenuActivity.this, MemoryGameActivity.class);
+            Intent intent = new Intent(MenuActivity.this, MemoryDifficultyActivity.class);
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             } else {

@@ -4,91 +4,97 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
-    android:padding="24dp"
+    android:background="@color/background_dark"
+    android:padding="0dp"
     tools:context=".MenuActivity">
 
-    <ImageView
-        android:id="@+id/imgLogo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@mipmap/ic_launcher"
+    <!-- Top bar -->
+    <View
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@drawable/top_bar_bg"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline_top"
-        android:contentDescription="@string/app_logo" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Botón Iniciar Sesión arriba-derecha -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_signin"
-        android:textSize="14sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <!-- Avatar small left -->
+    <View
+        android:id="@+id/miniAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@mipmap/ic_launcher_round"
+        app:layout_constraintTop_toTopOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="96dp"
+        android:layout_height="40dp"
+        android:minWidth="64dp"
+        android:text="@string/login_signin"
+        android:textSize="14sp"
+        android:background="@drawable/btn_orange_bg"
+        android:textColor="@color/textColorPrimary"
+        app:layout_constraintTop_toTopOf="@id/topBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp" />
 
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/menu_title"
-        android:textSize="34sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/guideline_top"
+        android:textColor="@color/textColorPrimary"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp" />
 
-    <Button
-        android:id="@+id/btnGuessNumber"
-        style="@style/MenuButton"
-        android:text="@string/menu_guess_number"
+    <LinearLayout
+        android:id="@+id/menuButtons"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="24dp">
 
-    <Button
-        android:id="@+id/btnRps"
-        style="@style/MenuButton"
-        android:text="@string/menu_rps"
-        app:layout_constraintTop_toBottomOf="@id/btnGuessNumber"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/btnGuessNumber"
+            style="@style/MenuButton"
+            android:text="@string/menu_guess_number" />
 
-    <Button
-        android:id="@+id/btnTicTacToe"
-        style="@style/MenuButton"
-        android:text="@string/menu_ttt"
-        app:layout_constraintTop_toBottomOf="@id/btnRps"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/btnRps"
+            style="@style/MenuButton"
+            android:text="@string/menu_rps" />
 
-    <Button
-        android:id="@+id/btnMemoryGame"
-        style="@style/MenuButton"
-        android:text="@string/menu_memory"
-        app:layout_constraintTop_toBottomOf="@id/btnTicTacToe"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/btnTicTacToe"
+            style="@style/MenuButton"
+            android:text="@string/menu_ttt" />
 
-    <!-- Botón Puntuaciones, oculto por defecto (visible cuando hay sesión) -->
-    <Button
-        android:id="@+id/btnScores"
-        style="@style/MenuButton"
-        android:text="@string/menu_scores"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/btnMemoryGame"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/btnMemoryGame"
+            style="@style/MenuButton"
+            android:text="@string/menu_memory" />
+
+        <Button
+            android:id="@+id/btnScores"
+            style="@style/MenuButton"
+            android:text="@string/menu_scores"
+            android:visibility="gone"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

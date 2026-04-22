@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText edtUsername, edtPassword;
-    private Button btnAction, btnShowLogin, btnShowRegister, btnBack;
     private boolean isLoginMode = true;
 
     private SharedPreferences prefs;
@@ -31,10 +28,10 @@ public class LoginActivity extends AppCompatActivity {
 
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
-        btnAction = findViewById(R.id.btnAction);
-        btnShowLogin = findViewById(R.id.btnShowLogin);
-        btnShowRegister = findViewById(R.id.btnShowRegister);
-        btnBack = findViewById(R.id.btnBack);
+        Button btnAction = findViewById(R.id.btnAction);
+        Button btnShowLogin = findViewById(R.id.btnShowLogin);
+        Button btnShowRegister = findViewById(R.id.btnShowRegister);
+        Button btnBack = findViewById(R.id.btnBack);
 
         btnShowLogin.setOnClickListener(v -> switchToLogin());
         btnShowRegister.setOnClickListener(v -> switchToRegister());
@@ -43,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
             String user = edtUsername.getText().toString().trim();
             String pass = edtPassword.getText().toString().trim();
             if (user.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, "Introduce usuario y contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.enter_your_guess), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -53,8 +50,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (stored != null && stored.equals(pass)) {
                     // Login correcto
                     prefs.edit().putString(KEY_LOGGED_IN, user).apply();
-                    Toast.makeText(this, "Sesión iniciada", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
+                    Toast.makeText(this, R.string.login_signin, Toast.LENGTH_SHORT).show();
+                    // Abrir MenuActivity
+                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
@@ -65,31 +64,43 @@ public class LoginActivity extends AppCompatActivity {
                 if (already != null) {
                     Toast.makeText(this, "Usuario ya existe", Toast.LENGTH_SHORT).show();
                 } else {
-                    prefs.edit().putString("user_" + user, pass).apply();
-                    prefs.edit().putString(KEY_LOGGED_IN, user).apply();
+                    prefs.edit().putString("user_" + user, pass).putString(KEY_LOGGED_IN, user).apply();
                     Toast.makeText(this, "Registro completado y sesión iniciada", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
+                    // Abrir MenuActivity
+                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    startActivity(intent);
                     finish();
                 }
             }
         });
 
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            // Si hay sesión activa, este botón cerrará sesión; si no, simplemente cierra la activity
+            if (prefs.getString(KEY_LOGGED_IN, null) != null) {
+                prefs.edit().remove(KEY_LOGGED_IN).apply();
+                Toast.makeText(this, R.string.login_logout, Toast.LENGTH_SHORT).show();
+            }
+            finish();
+        });
 
-        // Si ya hay sesión, cerrar inmediatamente con OK
-        if (prefs.getString(KEY_LOGGED_IN, null) != null) {
-            setResult(RESULT_OK);
+        // Si ya hay sesión, abrir directamente el menú
+        String logged = prefs.getString(KEY_LOGGED_IN, null);
+        if (logged != null) {
+            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+            startActivity(intent);
             finish();
         }
     }
 
     private void switchToLogin() {
         isLoginMode = true;
-        btnAction.setText("Iniciar sesión");
+        Button btnAction = findViewById(R.id.btnAction);
+        btnAction.setText(R.string.login_signin);
     }
 
     private void switchToRegister() {
         isLoginMode = false;
-        btnAction.setText("Registrar");
+        Button btnAction = findViewById(R.id.btnAction);
+        btnAction.setText(R.string.login_register);
     }
 }

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="24dp"
-    android:background="@color/background_light"
+    android:background="@color/background_dark"
     tools:context=".GuessNumberActivity">
 
     <TextView
@@ -17,6 +17,7 @@
         android:textStyle="bold"
         android:textAlignment="center"
         android:layout_marginBottom="24dp"
+        android:textColor="@color/textColorPrimary"
         tools:text="Adivina un número del 1 al 100" />
 
     <EditText
@@ -27,7 +28,10 @@
         android:hint="@string/enter_your_guess"
         android:inputType="number"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHint="@color/textColorSecondary"
+        android:textCursorDrawable="@drawable/cursor_white" />
 
     <Button
         android:id="@+id/btnCheck"
@@ -54,6 +58,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:layout_gravity="center"
-        android:text="@string/back_to_menu" />
+        android:text="@string/back_to_menu"
+        android:textColor="@color/textColorPrimary" />
 
 </LinearLayout>

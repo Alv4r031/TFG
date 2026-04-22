@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:padding="0dp"
+    android:background="@color/background_dark">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,36 +11,52 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
+        <!-- Top bar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/top_bar_bg" />
+
+        <!-- Avatar circular -->
+        <View
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/surface"
+            android:background="@drawable/ic_launcher_background"
+            android:elevation="4dp" />
+
         <TextView
             android:id="@+id/txtLoginTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login_title"
-            android:textSize="24sp"
+            android:text="@string/app_name"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="8dp" />
 
         <!-- Toggle simple: dos botones para cambiar vista login/registro -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            style="?android:attr/buttonBarStyle">
+            android:layout_marginTop="12dp">
 
             <Button
                 android:id="@+id/btnShowLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
                 android:text="@string/login_signin"
-                style="?android:attr/buttonBarButtonStyle" />
+                style="@style/IconButton"
+                android:layout_marginEnd="8dp" />
 
             <Button
                 android:id="@+id/btnShowRegister"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
                 android:text="@string/login_register"
-                android:layout_marginStart="8dp"
-                style="?android:attr/buttonBarButtonStyle" />
+                style="@style/IconButton" />
         </LinearLayout>
 
         <!-- Contenedor para campos -->
@@ -48,31 +65,51 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="16dp">
+            android:layout_margin="24dp">
 
             <EditText
                 android:id="@+id/edtUsername"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:hint="@string/login_username_hint"
                 android:autofillHints="username"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:background="@drawable/input_outline"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/textColorPrimary"
+                android:textColorHint="@color/textColorSecondary" />
 
             <EditText
                 android:id="@+id/edtPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:hint="@string/login_password_hint"
                 android:inputType="textPassword"
                 android:autofillHints="password"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="12dp"
+                android:background="@drawable/input_outline"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/textColorPrimary"
+                android:textColorHint="@color/textColorSecondary" />
 
             <Button
                 android:id="@+id/btnAction"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/login_signin"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="16dp"
+                android:background="@drawable/btn_orange_bg"
+                android:textColor="@color/textColorPrimary" />
+
+            <Button
+                android:id="@+id/btnCreateAccount"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/login_register"
+                android:layout_marginTop="12dp"
+                style="@style/MenuButton" />
 
         </LinearLayout>
 
@@ -81,7 +118,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/generic_back"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/textColorSecondary" />
 
     </LinearLayout>
 

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LudoMix">
         <activity
-            android:name=".MenuActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +22,7 @@
         </activity>
 
         <!-- Registrar las actividades de los minijuegos -->
+        <activity android:name=".MenuActivity" />
         <activity android:name=".GuessNumberActivity" />
         <activity android:name=".RpsActivity" />
         <activity android:name=".TicTacToeActivity" />
@@ -29,8 +30,8 @@
         <activity android:name=".ModeSelectionActivity" />
 
         <!-- Nuevas actividades -->
-        <activity android:name=".LoginActivity" />
         <activity android:name=".ScoresActivity" />
+        <activity android:name=".MemoryDifficultyActivity" />
 
     </application>
 

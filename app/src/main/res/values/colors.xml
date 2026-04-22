@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Paleta de Colores Primarios -->
-    <color name="colorPrimary">#6200EE</color> <!-- Morado principal -->
-    <color name="colorPrimaryDark">#3700B3</color> <!-- Morado oscuro para la barra de estado -->
-    <color name="colorAccent">#03DAC5</color> <!-- Verde azulado para acentos y controles (botones, etc.) -->
+    <!-- Paleta principal basada en la imagen proporcionada -->
+    <color name="background_dark">#000000</color>  <!-- Fondo general ahora negro -->
+    <color name="surface">#0E1113</color>
 
-    <!-- Colores para Texto -->
+    <!-- Color claro de fondo: algunas vistas lo usan en los layouts existentes -->
+    <color name="background_light">#F5F5F5</color>
+
+    <!-- Botones y acentos -->
+    <color name="colorPrimary">#00C2FF</color>      <!-- Cian para botones principales -->
+    <color name="colorPrimaryVariant">#008FB3</color>
+    <color name="colorAccent">#FF8A00</color>       <!-- Naranja para acentos y CTA -->
+
+    <!-- Texto -->
     <color name="textColorPrimary">#FFFFFF</color>
-    <color name="textColorSecondary">#DEFFFFFF</color> <!-- 87% de opacidad -->
-
-    <!-- Colores de Fondo -->
-    <color name="background_light">#F5F5F5</color> <!-- Fondo claro para los juegos -->
-    <color name="background_dark">#121212</color>  <!-- Fondo oscuro (si usaras tema noche) -->
+    <color name="textColorSecondary">#B3FFFFFF</color> <!-- Blanco con 70% opacidad -->
+    <color name="buttonText">#000000</color>         <!-- Texto de botones claros (cian) -->
 
     <!-- Colores específicos de los juegos -->
-    <color name="ticTacToeGrid">#BDBDBD</color>
+    <color name="ticTacToeGrid">#3B3B3B</color>
     <color name="playerX">#FF5252</color> <!-- Rojo para X -->
     <color name="playerO">#448AFF</color> <!-- Azul para O -->
 </resources>
