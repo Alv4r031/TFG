@@ -37,6 +37,10 @@ public class TicTacToeActivity extends AppCompatActivity {
     private Random random = new Random();
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
+    private static final String KEY_LOGGED_IN = "logged_in_user";
+
+    private UsuarioDAO usuarioDAO;
+    private PuntuacionDAO puntuacionDAO;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideOverlayRunnable; // runnable cancelable para ocultar overlay
@@ -48,6 +52,10 @@ public class TicTacToeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tictactoe);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        usuarioDAO = new UsuarioDAO(this);
+        usuarioDAO.open();
+        puntuacionDAO = new PuntuacionDAO(this);
+        puntuacionDAO.open();
 
         txtStatus = findViewById(R.id.txtStatus);
         overlayIcon = findViewById(R.id.overlayIcon);
@@ -112,12 +120,12 @@ public class TicTacToeActivity extends AppCompatActivity {
             button.setText("X");
             button.setTextColor(getResources().getColor(R.color.playerX));
             txtStatus.setText(R.string.turn_player_o);
-            showOverlay("X");
+            hideOverlayImmediate();
         } else {
             button.setText("O");
             button.setTextColor(getResources().getColor(R.color.playerO));
             txtStatus.setText(R.string.turn_player_x);
-            showOverlay("O");
+            hideOverlayImmediate();
         }
 
         turnCount++;
@@ -203,6 +211,33 @@ public class TicTacToeActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                guardarPuntuacion("Tres en Raya", 20);
+            }
+        } else if (message != null && !message.equals(getString(R.string.game_draw))) {
+            guardarPuntuacion("Tres en Raya", 20);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (usuarioDAO != null) {
+            usuarioDAO.close();
+        }
+        if (puntuacionDAO != null) {
+            puntuacionDAO.close();
+        }
+    }
+
+    private void guardarPuntuacion(String juego, int puntos) {
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) return;
+
+        Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
+        if (puntuacionDAO.registrarPuntuacion(puntuacion)) {
+            Usuario usuario = usuarioDAO.obtenerUsuario(username);
+            if (usuario != null) {
+                usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
         }
     }
@@ -227,58 +262,8 @@ public class TicTacToeActivity extends AppCompatActivity {
         }
     }
 
-    private void showOverlay(String symbol) {
-        if (overlayIcon == null) return;
-        Log.d(TAG, "showOverlay() symbol=" + symbol);
-        // Cancelar cualquier ocultado pendiente en el handler
-        if (hideOverlayRunnable != null) {
-            Log.d(TAG, "Removing previous hideOverlayRunnable");
-            handler.removeCallbacks(hideOverlayRunnable);
-            hideOverlayRunnable = null;
-        }
-
-        // Forzar visibilidad y alfa
-        overlayIcon.setText(symbol);
-        overlayIcon.setAlpha(1f);
-        overlayIcon.setVisibility(View.VISIBLE);
-        overlayIcon.bringToFront();
-        overlayIcon.requestLayout();
-        overlayIcon.invalidate();
-
-        // Registrar cuándo se mostró el overlay
-
-        overlayShownAt = SystemClock.uptimeMillis();
-
-        // Programar ocultado tras 1 segundo con verificación de timestamp para evitar races
-        hideOverlayRunnable = new Runnable() {
-            @Override
-            public void run() {
-                long now = SystemClock.uptimeMillis();
-                long elapsed = now - overlayShownAt;
-                Log.d(TAG, "hideOverlayRunnable run: elapsed=" + elapsed + "ms");
-                if (elapsed >= 1000) {
-                    if (overlayIcon != null) {
-                        overlayIcon.setVisibility(View.GONE);
-                        overlayIcon.setAlpha(1f);
-                        overlayIcon.setText("");
-                        overlayIcon.invalidate();
-                    }
-                    hideOverlayRunnable = null;
-                } else {
-                    // Si no ha pasado suficiente tiempo, reprogramar para la diferencia restante
-                    long remaining = 1000 - elapsed;
-                    Log.d(TAG, "Re-scheduling hideRunnable for " + remaining + "ms");
-                    handler.postDelayed(this, remaining);
-                }
-            }
-        };
-        handler.postDelayed(hideOverlayRunnable, 1000);
-    }
-
     private void hideOverlayImmediate() {
-        Log.d(TAG, "hideOverlayImmediate() called");
         if (hideOverlayRunnable != null) {
-            Log.d(TAG, "Removing scheduled hideOverlayRunnable");
             handler.removeCallbacks(hideOverlayRunnable);
             hideOverlayRunnable = null;
         }
@@ -308,12 +293,10 @@ public class TicTacToeActivity extends AppCompatActivity {
             button.setText("X");
             button.setTextColor(getResources().getColor(R.color.playerX));
             txtStatus.setText(R.string.turn_player_o);
-            showOverlay("X");
         } else {
             button.setText("O");
             button.setTextColor(getResources().getColor(R.color.playerO));
             txtStatus.setText(R.string.turn_player_x);
-            showOverlay("O");
         }
 
         turnCount++;

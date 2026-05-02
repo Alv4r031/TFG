@@ -3,6 +3,8 @@ package com.example.ludomix;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
@@ -29,6 +31,13 @@ public class RpsActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
+    private static final String KEY_LOGGED_IN = "logged_in_user";
+
+    private UsuarioDAO usuarioDAO;
+    private PuntuacionDAO puntuacionDAO;
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable clearChoicesRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,10 @@ public class RpsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rps);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        usuarioDAO = new UsuarioDAO(this);
+        usuarioDAO.open();
+        puntuacionDAO = new PuntuacionDAO(this);
+        puntuacionDAO.open();
 
         int resTxtResult = getResources().getIdentifier("txtResult", "id", getPackageName());
         int resTxtScore = getResources().getIdentifier("txtScore", "id", getPackageName());
@@ -98,6 +111,7 @@ public class RpsActivity extends AppCompatActivity {
 
         if (resultTextView != null) resultTextView.setText(resultText);
         updateScoreText();
+        scheduleClearChoices();
 
         // Guardar estadísticas locales
         try {
@@ -106,11 +120,51 @@ public class RpsActivity extends AppCompatActivity {
             plays = plays + 1;
             if (playerWon) wins = wins + 1;
             prefs.edit().putInt("plays_rps", plays).putInt("wins_rps", wins).apply();
+
+            if (playerWon) {
+                guardarPuntuacion("Piedra Papel Tijera", 10);
+            }
             // Feedback al usuario
             Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+        if (usuarioDAO != null) {
+            usuarioDAO.close();
+        }
+        if (puntuacionDAO != null) {
+            puntuacionDAO.close();
+        }
+    }
+
+    private void guardarPuntuacion(String juego, int puntos) {
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) return;
+
+        Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
+        if (puntuacionDAO.registrarPuntuacion(puntuacion)) {
+            Usuario usuario = usuarioDAO.obtenerUsuario(username);
+            if (usuario != null) {
+                usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
+            }
+        }
+    }
+
+    private void scheduleClearChoices() {
+        if (clearChoicesRunnable != null) {
+            handler.removeCallbacks(clearChoicesRunnable);
+        }
+        clearChoicesRunnable = () -> {
+            if (playerChoiceView != null) playerChoiceView.setText("");
+            if (cpuChoiceView != null) cpuChoiceView.setText("");
+        };
+        handler.postDelayed(clearChoicesRunnable, 1000);
     }
 
     /**
@@ -154,6 +208,9 @@ public class RpsActivity extends AppCompatActivity {
      * Puedes vincularlo a un botón "Reiniciar" en tu XML.
      */
     public void resetGame(View view) {
+        if (clearChoicesRunnable != null) {
+            handler.removeCallbacks(clearChoicesRunnable);
+        }
         playerScore = 0;
         cpuScore = 0;
         updateScoreText();

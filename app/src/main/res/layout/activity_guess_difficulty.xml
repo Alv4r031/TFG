@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@color/background_dark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selecciona Dificultad"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Fácil -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnEasy"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Fácil (1-50)"
+            android:textSize="18sp"
+            android:background="@drawable/btn_orange_bg"
+            android:textColor="@color/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/txtEasyStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/textColorSecondary"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Medio -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnMedium"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Medio (1-100)"
+            android:textSize="18sp"
+            android:background="@drawable/btn_orange_bg"
+            android:textColor="@color/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/txtMediumStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/textColorSecondary"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Difícil -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="32dp">
+
+        <Button
+            android:id="@+id/btnHard"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Difícil (1-500)"
+            android:textSize="18sp"
+            android:background="@drawable/btn_orange_bg"
+            android:textColor="@color/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/txtHardStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/textColorSecondary"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/generic_back"
+        android:textColor="@color/textColorSecondary"
+        style="@style/MenuButton" />
+
+</LinearLayout>
+

@@ -33,6 +33,10 @@ public class MemoryGameActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
+    private static final String KEY_LOGGED_IN = "logged_in_user";
+
+    private UsuarioDAO usuarioDAO;
+    private PuntuacionDAO puntuacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,10 @@ public class MemoryGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_memory_game);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        usuarioDAO = new UsuarioDAO(this);
+        usuarioDAO.open();
+        puntuacionDAO = new PuntuacionDAO(this);
+        puntuacionDAO.open();
 
         statusTextView = findViewById(R.id.txtMemoryStatus);
         memoryGrid = findViewById(R.id.memoryGrid);
@@ -216,6 +224,8 @@ public class MemoryGameActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                guardarPuntuacion("Memoria", 50);
             }
 
             resetTurn();
@@ -239,5 +249,29 @@ public class MemoryGameActivity extends AppCompatActivity {
 
     public void resetMemoryGame(View view) {
         startNewGame();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (usuarioDAO != null) {
+            usuarioDAO.close();
+        }
+        if (puntuacionDAO != null) {
+            puntuacionDAO.close();
+        }
+    }
+
+    private void guardarPuntuacion(String juego, int puntos) {
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) return;
+
+        Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
+        if (puntuacionDAO.registrarPuntuacion(puntuacion)) {
+            Usuario usuario = usuarioDAO.obtenerUsuario(username);
+            if (usuario != null) {
+                usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
+            }
+        }
     }
 }

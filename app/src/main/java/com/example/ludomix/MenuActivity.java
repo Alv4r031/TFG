@@ -31,7 +31,7 @@ public class MenuActivity extends AppCompatActivity {
         Button btnScores = findViewById(R.id.btnScores);
 
         btnGuessNumber.setOnClickListener(v -> {
-            Intent intent = new Intent(MenuActivity.this, GuessNumberActivity.class);
+            Intent intent = new Intent(MenuActivity.this, GuessNumberDifficultyActivity.class);
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             } else {

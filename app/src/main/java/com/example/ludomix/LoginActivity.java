@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,12 +13,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText edtUsername, edtPassword;
+    private EditText edtEmail, edtUsername, edtPassword;
     private boolean isLoginMode = true;
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
     private static final String KEY_LOGGED_IN = "logged_in_user";
+    
+    private UsuarioDAO usuarioDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +28,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        
+        // Inicializar DAO
+        usuarioDAO = new UsuarioDAO(this);
+        usuarioDAO.open();
 
+        edtEmail = findViewById(R.id.edtEmail);
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         Button btnAction = findViewById(R.id.btnAction);
@@ -37,39 +45,60 @@ public class LoginActivity extends AppCompatActivity {
         btnShowRegister.setOnClickListener(v -> switchToRegister());
 
         btnAction.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
             String user = edtUsername.getText().toString().trim();
             String pass = edtPassword.getText().toString().trim();
-            if (user.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, getString(R.string.enter_your_guess), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
+            
             if (isLoginMode) {
-                // Comprueba si existe usuario guardado (demo en SharedPreferences)
-                String stored = prefs.getString("user_" + user, null);
-                if (stored != null && stored.equals(pass)) {
+                if (user.isEmpty() || pass.isEmpty()) {
+                    Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Verificar si el usuario existe en la BD
+                if (!usuarioDAO.usuarioExiste(user)) {
+                    Toast.makeText(this, "Usuario no registrado. Por favor regístrate primero", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Validar credenciales
+                if (usuarioDAO.validarLogin(user, pass)) {
                     // Login correcto
                     prefs.edit().putString(KEY_LOGGED_IN, user).apply();
-                    Toast.makeText(this, R.string.login_signin, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "¡Bienvenido!", Toast.LENGTH_SHORT).show();
                     // Abrir MenuActivity
                     Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                // Registro: guardar credenciales en SharedPreferences (demo)
-                String already = prefs.getString("user_" + user, null);
-                if (already != null) {
-                    Toast.makeText(this, "Usuario ya existe", Toast.LENGTH_SHORT).show();
-                } else {
-                    prefs.edit().putString("user_" + user, pass).putString(KEY_LOGGED_IN, user).apply();
-                    Toast.makeText(this, "Registro completado y sesión iniciada", Toast.LENGTH_SHORT).show();
+                // Registro: validar todos los campos
+                if (email.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+                    Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Validar formato de email simple
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Crear nuevo usuario
+                Usuario nuevoUsuario = new Usuario(user, email, pass);
+                
+                if (usuarioDAO.registrarUsuario(nuevoUsuario)) {
+                    Toast.makeText(this, "¡Registro completado!", Toast.LENGTH_SHORT).show();
+                    // Realizar login automático
+                    prefs.edit().putString(KEY_LOGGED_IN, user).apply();
                     // Abrir MenuActivity
                     Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                     startActivity(intent);
                     finish();
+                } else {
+                    Toast.makeText(this, "Usuario ya existe", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -92,15 +121,31 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (usuarioDAO != null) {
+            usuarioDAO.close();
+        }
+    }
+
     private void switchToLogin() {
         isLoginMode = true;
         Button btnAction = findViewById(R.id.btnAction);
         btnAction.setText(R.string.login_signin);
+        edtEmail.setVisibility(View.GONE);
+        edtEmail.setText("");
+        edtUsername.setText("");
+        edtPassword.setText("");
     }
 
     private void switchToRegister() {
         isLoginMode = false;
         Button btnAction = findViewById(R.id.btnAction);
         btnAction.setText(R.string.login_register);
+        edtEmail.setVisibility(View.VISIBLE);
+        edtEmail.setText("");
+        edtUsername.setText("");
+        edtPassword.setText("");
     }
 }
