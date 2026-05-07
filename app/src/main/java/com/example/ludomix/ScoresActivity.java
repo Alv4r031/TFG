@@ -90,7 +90,7 @@ public class ScoresActivity extends AppCompatActivity {
                     String juegoDb = cursor.getString(
                             cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO)
                     );
-                    if (juegoDb.equals(juego)) {
+                    if (juegoDb.contains(juego)) {
                         contador++;
                         int puntos = cursor.getInt(
                                 cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS)

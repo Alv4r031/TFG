@@ -28,6 +28,7 @@
         <activity android:name=".TicTacToeActivity" />
         <activity android:name=".MemoryGameActivity" />
         <activity android:name=".ModeSelectionActivity" />
+        <activity android:name=".GuessNumberDifficultyActivity" />
 
         <!-- Nuevas actividades -->
         <activity android:name=".ScoresActivity" />

@@ -1,6 +1,7 @@
 package com.example.ludomix;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ public class GuessNumberActivity extends AppCompatActivity {
     private int secretNumber;
     private TextView txtResult;
     private TextView txtAttempts;
+    private TextView txtGuessProgress;
     private EditText txtGuess;
     private Button btnCheck;
     private Button btnPlayAgain;
@@ -70,6 +72,7 @@ public class GuessNumberActivity extends AppCompatActivity {
         // findViewById en lugar de ViewBinding
         txtResult = findViewById(R.id.txtResult);
         txtAttempts = findViewById(R.id.txtAttempts);
+        txtGuessProgress = findViewById(R.id.txtGuessProgress);
         txtGuess = findViewById(R.id.txtGuess);
         btnCheck = findViewById(R.id.btnCheck);
         btnPlayAgain = findViewById(R.id.btnPlayAgain);
@@ -80,6 +83,16 @@ public class GuessNumberActivity extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
         }
 
+        Button btnBackToDifficulty = findViewById(R.id.btnBackToDifficulty);
+        if (btnBackToDifficulty != null) {
+            btnBackToDifficulty.setOnClickListener(v -> {
+                // Volver al selector de dificultad de Adivina Número
+                Intent intent = new Intent(this, GuessNumberDifficultyActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        }
+
         // Asigna el listener al botón de comprobar
         btnCheck.setOnClickListener(v -> checkGuess());
 
@@ -87,15 +100,17 @@ public class GuessNumberActivity extends AppCompatActivity {
         btnPlayAgain.setOnClickListener(v -> playAgain());
 
         startNewGame();
+        updateGuessProgress();
     }
 
     private void startNewGame() {
         secretNumber = new Random().nextInt(maxNumber) + 1;
         attempts = 0; // resetear contador
-        txtResult.setText(getString(R.string.guess_a_number_prompt));
+        txtResult.setText(getString(R.string.guess_a_number_prompt, maxNumber));
         if (txtAttempts != null) {
             txtAttempts.setText("Turnos: 0");
         }
+        updateGuessProgress();
         txtGuess.setText("");
         txtGuess.setEnabled(true);
         btnCheck.setEnabled(true);
@@ -134,7 +149,61 @@ public class GuessNumberActivity extends AppCompatActivity {
                 prefs.edit().putInt("plays_guess", plays + 1).putInt("wins_guess", wins + 1).apply();
 
                 String juegoName = "Adivina Número - " + difficultyName;
-                guardarPuntuacion(juegoName, Math.max(100 - attempts * 5, 10));
+                // Calcular puntos según dificultad y número de intentos
+                int puntos;
+                if (difficulty == GuessNumberDifficultyActivity.DIFF_EASY) {
+                    // Reglas para nivel Fácil (ya definidas)
+                    if (attempts < 5) {
+                        puntos = 100;
+                    } else if (attempts < 10) {
+                        puntos = 75;
+                    } else if (attempts < 15) {
+                        puntos = 50;
+                    } else {
+                        puntos = 25;
+                    }
+                } else {
+                    // Nuevo sistema solicitado para MEDIO y DIFÍCIL: 200/100/75/50 según intentos
+                    if (attempts < 5) {
+                        puntos = 200;
+                    } else if (attempts < 10) {
+                        puntos = 100;
+                    } else if (attempts < 15) {
+                        puntos = 75;
+                    } else {
+                        puntos = 50;
+                    }
+                }
+                // Antes de guardar, comprobar puntos totales actuales para detectar desbloqueo
+                PuntuacionDAO dao = new PuntuacionDAO(this);
+                dao.open();
+                int antesTotal = 0;
+                String username = prefs.getString(KEY_LOGGED_IN, null);
+                if (username != null) {
+                    android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        do {
+                            String juego = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO));
+                            int pts = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+                            if (("Adivina Número - Fácil".equals(juego) && difficulty == GuessNumberDifficultyActivity.DIFF_EASY) || ("Adivina Número - Medio".equals(juego) && difficulty == GuessNumberDifficultyActivity.DIFF_MEDIUM)) {
+                                antesTotal += pts;
+                            }
+                        } while (cursor.moveToNext());
+                        cursor.close();
+                    }
+                }
+
+                guardarPuntuacion(juegoName, puntos);
+
+                // Después de guardar, comprobar si se ha cruzado el umbral
+                int despuesTotal = antesTotal + puntos;
+                if (difficulty == GuessNumberDifficultyActivity.DIFF_EASY && antesTotal < 500 && despuesTotal >= 500) {
+                    Toast.makeText(this, "¡Has desbloqueado el nivel Medio!", Toast.LENGTH_LONG).show();
+                } else if (difficulty == GuessNumberDifficultyActivity.DIFF_MEDIUM && antesTotal < 1000 && despuesTotal >= 1000) {
+                    Toast.makeText(this, "¡Has desbloqueado el nivel Difícil!", Toast.LENGTH_LONG).show();
+                }
+                dao.close();
+                updateGuessProgress();
 
             } else if (guess < secretNumber) {
                 txtResult.setText(getString(R.string.guess_too_low));
@@ -178,6 +247,7 @@ public class GuessNumberActivity extends AppCompatActivity {
                 usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
             Toast.makeText(this, "+" + puntos + " puntos guardados", Toast.LENGTH_SHORT).show();
+            updateGuessProgress();
         }
     }
 
@@ -187,7 +257,7 @@ public class GuessNumberActivity extends AppCompatActivity {
         }
         clearHintRunnable = () -> {
             if (txtResult != null && btnCheck.isEnabled()) {
-                txtResult.setText(R.string.guess_a_number_prompt);
+                txtResult.setText(getString(R.string.guess_a_number_prompt, maxNumber));
             }
         };
         handler.postDelayed(clearHintRunnable, 2000);
@@ -198,5 +268,39 @@ public class GuessNumberActivity extends AppCompatActivity {
             handler.removeCallbacks(clearHintRunnable);
         }
         startNewGame();
+    }
+
+    private void updateGuessProgress() {
+        if (txtGuessProgress == null) return;
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) {
+            txtGuessProgress.setText("Inicia sesión para ver progreso");
+            return;
+        }
+
+        // Sumar puntos de Adivina Número
+        PuntuacionDAO dao = new PuntuacionDAO(this);
+        dao.open();
+        int total = 0;
+        android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+        String expectedJuego = "Adivina Número - " + difficultyName; // sumar solo para la dificultad actual
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String juego = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO));
+                if (juego != null && juego.trim().equals(expectedJuego)) {
+                    total += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        dao.close();
+
+        int siguienteUmbral = Integer.MAX_VALUE;
+        if (difficulty == GuessNumberDifficultyActivity.DIFF_EASY) siguienteUmbral = 500;
+        else if (difficulty == GuessNumberDifficultyActivity.DIFF_MEDIUM) siguienteUmbral = 1000;
+        else siguienteUmbral = total; // si difícil
+
+        // Mostrar en formato sencillo solicitado
+        txtGuessProgress.setText("Puntos para siguiente nivel: " + total + " / " + siguienteUmbral);
     }
 }

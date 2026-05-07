@@ -11,7 +11,9 @@
     <string name="memory_start_prompt">Encuentra todos los pares</string>
     <string name="memory_pair_found">¡Par encontrado!</string>
     <string name="memory_no_match">No es un par. ¡Intenta de nuevo!</string>
-    <string name="memory_win">¡Felicidades! ¡Has encontrado todos los pares!</string>
+    <string name="memory_win">¡Felicidades! Ganaste</string>
+    <!-- Contador de turnos en el juego de memoria -->
+    <string name="memory_pair_attempts">Turnos: %1$d</string>
     <string name="enter_your_guess">Introduce tu número</string>
     <string name="check_button">Comprobar</string>
     <string name="play_again">Jugar de nuevo</string>
@@ -34,7 +36,7 @@
     <string name="rps_start_prompt">Elige Piedra, Papel o Tijera</string>
 
     <!-- GuessNumberActivity strings -->
-    <string name="guess_a_number_prompt">Adivina un número del 1 al 100</string>
+    <string name="guess_a_number_prompt">Adivina un número del 1 al %1$d</string>
     <string name="empty_guess_error">Por favor introduce un número</string>
     <string name="invalid_number_error">Introduce un número válido</string>
     <string name="correct_guess">¡Correcto! Has adivinado el número.</string>

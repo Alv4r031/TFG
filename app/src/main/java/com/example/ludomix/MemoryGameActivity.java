@@ -1,6 +1,7 @@
 package com.example.ludomix;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,15 +22,20 @@ public class MemoryGameActivity extends AppCompatActivity {
 
     // Número de cartas ahora configurable según dificultad
     private int numCards = 16;
+    private int difficulty = MemoryDifficultyActivity.DIFF_MEDIUM;
+    private String difficultyName = "Medio";
     private final List<String> cardValues = new ArrayList<>();
     private final List<Button> cards = new ArrayList<>();
 
     private Button firstCard = null;
     private Button secondCard = null;
     private int pairsFound = 0;
+    private int attempts = 0; // turns (cada vez que se prueban dos cartas)
+    private boolean isBusy = false; // evita que el usuario pulse cartas mientras se procesan
 
     private TextView statusTextView;
     private GridLayout memoryGrid;
+    private TextView txtMemoryProgress;
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
@@ -51,9 +57,24 @@ public class MemoryGameActivity extends AppCompatActivity {
 
         statusTextView = findViewById(R.id.txtMemoryStatus);
         memoryGrid = findViewById(R.id.memoryGrid);
+        int resIdProgress = getResources().getIdentifier("txtMemoryProgress", "id", getPackageName());
+        if (resIdProgress != 0) {
+            txtMemoryProgress = findViewById(resIdProgress);
+        } else {
+            txtMemoryProgress = null; // layout variante no contiene el id
+        }
 
         Button btnBack = findViewById(R.id.btnBackToMenu);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+
+        Button btnBackToDifficulty = findViewById(R.id.btnBackToDifficulty);
+        if (btnBackToDifficulty != null) {
+            btnBackToDifficulty.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MemoryDifficultyActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        }
 
         if (memoryGrid == null) {
             Toast.makeText(this, "GridLayout no encontrado en el layout", Toast.LENGTH_LONG).show();
@@ -62,28 +83,32 @@ public class MemoryGameActivity extends AppCompatActivity {
 
         // Leer dificultad enviada por MemoryDifficultyActivity
         try {
-            int difficulty = getIntent().getIntExtra(MemoryDifficultyActivity.EXTRA_DIFFICULTY, MemoryDifficultyActivity.DIFF_MEDIUM);
+            difficulty = getIntent().getIntExtra(MemoryDifficultyActivity.EXTRA_DIFFICULTY, MemoryDifficultyActivity.DIFF_MEDIUM);
             switch (difficulty) {
                 case MemoryDifficultyActivity.DIFF_EASY:
                     // Fácil = 2x2 (4 cartas)
                     numCards = 4; // 2x2
                     memoryGrid.setColumnCount(2);
+                    difficultyName = "Fácil";
                     break;
                 case MemoryDifficultyActivity.DIFF_HARD:
                     // Cambiado a 5x5 para mejor visualización
                     numCards = 25; // 5x5
                     memoryGrid.setColumnCount(5);
+                    difficultyName = "Difícil";
                     break;
                 case MemoryDifficultyActivity.DIFF_MEDIUM:
                 default:
                     numCards = 16; // 4x4
                     memoryGrid.setColumnCount(4);
+                    difficultyName = "Medio";
                     break;
             }
         } catch (Exception e) {
             // Fallback por si algo falla
             numCards = 16;
             memoryGrid.setColumnCount(4);
+            difficultyName = "Medio";
         }
 
         // Asegurar que haya columnas (fallback si el atributo no se leyó)
@@ -92,16 +117,19 @@ public class MemoryGameActivity extends AppCompatActivity {
         }
 
         startNewGame();
+        updateMemoryProgress();
     }
 
     private void startNewGame() {
         // Limpiar estado anterior
         pairsFound = 0;
+        attempts = 0;
         firstCard = null;
         secondCard = null;
         cards.clear();
         memoryGrid.removeAllViews();
         statusTextView.setText(R.string.memory_start_prompt);
+        updateMemoryProgress();
 
         // Símbolos disponibles (suficientes hasta 36 cartas -> 18 pares)
         String[] symbols = {"🐶", "🐱", "🐵", "🦁", "🐯", "🦊", "🐨", "🐼", "🐸", "🐔", "🦄", "🐷", "🐮", "🐗", "🐝", "🦋", "🐞", "🐌", "🐙", "🐬"};
@@ -183,6 +211,7 @@ public class MemoryGameActivity extends AppCompatActivity {
     }
 
     public void revealCard(View view) {
+        if (isBusy) return; // Ignorar clicks mientras procesamos
         Button selectedCard = (Button) view;
 
         // No hacer nada si se pulsa una carta ya revelada o si ya hay 2 cartas levantadas
@@ -196,6 +225,12 @@ public class MemoryGameActivity extends AppCompatActivity {
             firstCard = selectedCard;
         } else {
             secondCard = selectedCard;
+            // Contabilizar intento (se han levantado dos cartas)
+            attempts++;
+            // Actualizar estado en pantalla
+            statusTextView.setText(getString(R.string.memory_pair_attempts, attempts));
+            // Bloquear nuevas interacciones hasta resolver el par
+            isBusy = true;
             checkForMatch();
         }
     }
@@ -204,15 +239,20 @@ public class MemoryGameActivity extends AppCompatActivity {
         // Si alguna carta es el comodín (★) no puede emparejar
         Object tag1 = firstCard.getTag();
         Object tag2 = secondCard.getTag();
+
+        // Si ambas cartas tienen tag y son iguales y no son comodín => es un par
         if (tag1 != null && tag2 != null && tag1.equals(tag2) && !"★".equals(tag1)) {
-            // ¡Es un par!
-            statusTextView.setText(R.string.memory_pair_found);
+            // ¡Es un par! (sin mostrar texto en pantalla)
             firstCard.setEnabled(false); // Deshabilita para que no se pueda volver a pulsar
             secondCard.setEnabled(false);
 
             pairsFound++;
 
+            // Desbloquear inmediatamente para seguir jugando
+            isBusy = false;
+
             if (pairsFound == numCards / 2) {
+                // Se han encontrado todos los pares: victoria
                 statusTextView.setText(R.string.memory_win);
 
                 // Juego completado: actualizar estadísticas
@@ -225,19 +265,70 @@ public class MemoryGameActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                guardarPuntuacion("Memoria", 50);
-            }
+                // Guardar puntuación según dificultad
+                int puntosAGuardar;
+                if (difficulty == MemoryDifficultyActivity.DIFF_EASY) {
+                    // Fácil: recompensa fija
+                    puntosAGuardar = 100;
+                } else {
+                    // MEDIO y DIFÍCIL: aplicar nueva tabla basada en attempts
+                    if (attempts < 5) {
+                        puntosAGuardar = 200;
+                    } else if (attempts < 10) {
+                        puntosAGuardar = 100;
+                    } else if (attempts < 15) {
+                        puntosAGuardar = 75;
+                    } else {
+                        puntosAGuardar = 50;
+                    }
+                }
 
-            resetTurn();
+                // Comprobar desbloqueos: obtener total antes
+                int antesTotal = 0;
+                String username = prefs.getString(KEY_LOGGED_IN, null);
+                if (username != null) {
+                    PuntuacionDAO dao = new PuntuacionDAO(this);
+                    dao.open();
+                    android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        do {
+                            String juego = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO));
+                            int pts = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+                            if (("Memoria - Fácil".equals(juego) && difficulty == MemoryDifficultyActivity.DIFF_EASY) || ("Memoria - Medio".equals(juego) && difficulty == MemoryDifficultyActivity.DIFF_MEDIUM)) {
+                                antesTotal += pts;
+                            }
+                        } while (cursor.moveToNext());
+                        cursor.close();
+                    }
+                    dao.close();
+                }
+
+                guardarPuntuacion("Memoria - " + difficultyName, puntosAGuardar);
+
+                int despuesTotal = antesTotal + puntosAGuardar;
+                if (difficulty == MemoryDifficultyActivity.DIFF_EASY && antesTotal < 500 && despuesTotal >= 500) {
+                    Toast.makeText(this, "¡Has desbloqueado el nivel Medio!", Toast.LENGTH_LONG).show();
+                } else if (difficulty == MemoryDifficultyActivity.DIFF_MEDIUM && antesTotal < 1000 && despuesTotal >= 1000) {
+                    Toast.makeText(this, "¡Has desbloqueado el nivel Difícil!", Toast.LENGTH_LONG).show();
+                }
+
+                // Actualizar indicador de progreso tras guardar puntos
+                updateMemoryProgress();
+                resetTurn();
+            } else {
+                // Par encontrado pero todavía quedan más pares
+                resetTurn();
+            }
         } else {
-            // No es un par
+            // No es un par: ocultar las dos cartas después de un breve retraso
             statusTextView.setText(R.string.memory_no_match);
 
-            // Usamos un Handler para ocultar las cartas después de un breve retraso
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                firstCard.setText("");
-                secondCard.setText("");
+                if (firstCard != null) firstCard.setText("");
+                if (secondCard != null) secondCard.setText("");
                 resetTurn();
+                // Desbloquear interacción tras ocultar
+                isBusy = false;
             }, 1000); // 1 segundo de retraso
         }
     }
@@ -272,6 +363,47 @@ public class MemoryGameActivity extends AppCompatActivity {
             if (usuario != null) {
                 usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
+            updateMemoryProgress();
         }
+    }
+
+    private void updateMemoryProgress() {
+        if (txtMemoryProgress == null) return;
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) {
+            txtMemoryProgress.setText("Inicia sesión para ver progreso");
+            return;
+        }
+
+        // Calcular puntos acumulados para la familia 'Memoria'
+        PuntuacionDAO dao = new PuntuacionDAO(this);
+        dao.open();
+        int totalMemoria = 0;
+        android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+        String expectedJuego = "Memoria - " + difficultyName; // sumar solo para la dificultad actual
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String juego = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO));
+                if (juego != null && juego.trim().equals(expectedJuego)) {
+                    totalMemoria += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        dao.close();
+
+        // Determinar umbral siguiente según dificultad actual
+        int siguienteUmbral;
+        if (difficulty == MemoryDifficultyActivity.DIFF_EASY) {
+            siguienteUmbral = 500;
+        } else if (difficulty == MemoryDifficultyActivity.DIFF_MEDIUM) {
+            siguienteUmbral = 1000;
+        } else {
+            // Si estamos en Difícil no hay siguiente umbral: mostramos el total como objetivo (X / X)
+            siguienteUmbral = totalMemoria;
+        }
+
+        // Mostrar en formato sencillo solicitado
+        txtMemoryProgress.setText("Puntos para siguiente nivel: " + totalMemoria + " / " + siguienteUmbral);
     }
 }

@@ -25,9 +25,13 @@ public class RpsActivity extends AppCompatActivity {
     private TextView scoreTextView; // Opcional: para llevar la puntuación
     private TextView playerChoiceView;
     private TextView cpuChoiceView;
+    private TextView playerWinsView;
+    private TextView cpuWinsView;
 
     private int playerScore = 0;
     private int cpuScore = 0;
+    private int playerWins = 0;
+    private int cpuWins = 0;
 
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
@@ -59,6 +63,8 @@ public class RpsActivity extends AppCompatActivity {
 
         playerChoiceView = findViewById(R.id.playerChoiceView);
         cpuChoiceView = findViewById(R.id.cpuChoiceView);
+        playerWinsView = findViewById(R.id.playerWinsView);
+        cpuWinsView = findViewById(R.id.cpuWinsView);
 
         if (resBtnBack != 0) {
             Button btnBack = findViewById(resBtnBack);
@@ -67,6 +73,7 @@ public class RpsActivity extends AppCompatActivity {
 
         updateScoreText();
         if (resultTextView != null) resultTextView.setText(getString(R.string.rps_start_prompt));
+        updateWinsViews();
     }
 
     // 2. Métodos para ser llamados desde los botones en el XML
@@ -101,16 +108,19 @@ public class RpsActivity extends AppCompatActivity {
                 (playerChoice == SCISSORS && cpuChoice == PAPER)) {
             // El jugador gana
             playerScore++;
+            playerWins++;
             playerWon = true;
             resultText = getString(R.string.rps_win, choiceToString(playerChoice), choiceToString(cpuChoice));
         } else {
             // La CPU gana
             cpuScore++;
+            cpuWins++;
             resultText = getString(R.string.rps_lose, choiceToString(cpuChoice), choiceToString(playerChoice));
         }
 
         if (resultTextView != null) resultTextView.setText(resultText);
         updateScoreText();
+        updateWinsViews();
         scheduleClearChoices();
 
         // Guardar estadísticas locales
@@ -164,7 +174,8 @@ public class RpsActivity extends AppCompatActivity {
             if (playerChoiceView != null) playerChoiceView.setText("");
             if (cpuChoiceView != null) cpuChoiceView.setText("");
         };
-        handler.postDelayed(clearChoicesRunnable, 1000);
+        // Aumentamos ligeramente el delay para que los iconos tarden un poco más en desaparecer
+        handler.postDelayed(clearChoicesRunnable, 1500);
     }
 
     /**
@@ -203,6 +214,11 @@ public class RpsActivity extends AppCompatActivity {
         if (scoreTextView != null) scoreTextView.setText(getString(R.string.score_text, playerScore, cpuScore));
     }
 
+    private void updateWinsViews() {
+        if (playerWinsView != null) playerWinsView.setText("Tú: " + playerWins);
+        if (cpuWinsView != null) cpuWinsView.setText("CPU: " + cpuWins);
+    }
+
     /**
      * Reinicia el marcador del juego.
      * Puedes vincularlo a un botón "Reiniciar" en tu XML.
@@ -213,7 +229,10 @@ public class RpsActivity extends AppCompatActivity {
         }
         playerScore = 0;
         cpuScore = 0;
+        playerWins = 0;
+        cpuWins = 0;
         updateScoreText();
+        updateWinsViews();
         if (resultTextView != null) resultTextView.setText(getString(R.string.rps_start_prompt));
         if (playerChoiceView != null) playerChoiceView.setText("");
         if (cpuChoiceView != null) cpuChoiceView.setText("");

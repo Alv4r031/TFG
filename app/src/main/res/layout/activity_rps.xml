@@ -34,24 +34,62 @@
         android:gravity="center"
         android:layout_marginBottom="24dp">
 
-        <TextView
-            android:id="@+id/playerChoiceView"
+        <!-- Contenedor jugador: etiqueta de wins encima del icono -->
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="72sp"
-            android:layout_marginEnd="48dp"
-            android:contentDescription="@string/desc_player_choice"
-            android:textColor="@color/textColorPrimary" />
+            android:gravity="center"
+            android:layout_marginEnd="48dp">
 
-        <TextView
-            android:id="@+id/cpuChoiceView"
+            <TextView
+                android:id="@+id/playerWinsView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tú: 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/playerChoiceView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="72sp"
+                android:contentDescription="@string/desc_player_choice"
+                android:textColor="@color/textColorPrimary" />
+
+        </LinearLayout>
+
+        <!-- Contenedor CPU: etiqueta de wins encima del icono -->
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="72sp"
-            android:contentDescription="@string/desc_cpu_choice"
-            android:textColor="@color/textColorPrimary" />
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/cpuWinsView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CPU: 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/cpuChoiceView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="72sp"
+                android:contentDescription="@string/desc_cpu_choice"
+                android:textColor="@color/textColorPrimary" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
