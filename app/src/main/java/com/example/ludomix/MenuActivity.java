@@ -1,12 +1,20 @@
 package com.example.ludomix;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MenuActivity extends AppCompatActivity {
@@ -14,6 +22,7 @@ public class MenuActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
     private static final String KEY_LOGGED_IN = "logged_in_user";
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,83 +36,111 @@ public class MenuActivity extends AppCompatActivity {
         Button btnRps = findViewById(R.id.btnRps);
         Button btnTicTacToe = findViewById(R.id.btnTicTacToe);
         Button btnMemoryGame = findViewById(R.id.btnMemoryGame);
-        Button btnLogin = findViewById(R.id.btnLogin);
         Button btnScores = findViewById(R.id.btnScores);
+        TextView txtUsername = findViewById(R.id.txtUsername);
+        ImageView imgLogoLogout = findViewById(R.id.imgLogoLogout);
+        Button btnLogout = findViewById(R.id.btnLogout);
 
         btnGuessNumber.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, GuessNumberDifficultyActivity.class);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Actividad no disponible", Toast.LENGTH_SHORT).show();
-            }
+            playButtonAndLaunch(v, intent);
         });
 
         btnRps.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, RpsActivity.class);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Actividad no disponible", Toast.LENGTH_SHORT).show();
-            }
+            playButtonAndLaunch(v, intent);
         });
 
         btnTicTacToe.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, ModeSelectionActivity.class);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Actividad no disponible", Toast.LENGTH_SHORT).show();
-            }
+            playButtonAndLaunch(v, intent);
         });
 
         btnMemoryGame.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, MemoryDifficultyActivity.class);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Actividad no disponible", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Botón Login / Logout
-        btnLogin.setOnClickListener(v -> {
-            String logged = prefs.getString(KEY_LOGGED_IN, null);
-            if (logged == null) {
-                // No hay sesión -> abrir pantalla de login/registro
-                Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
-                startActivity(intent);
-            } else {
-                // Hay sesión -> cerrar sesión
-                prefs.edit().remove(KEY_LOGGED_IN).apply();
-                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
-                // Actualizar UI
-                updateScoresButtonVisibility(btnScores);
-                updateLoginButtonText(btnLogin);
-            }
+            playButtonAndLaunch(v, intent);
         });
 
         btnScores.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, ScoresActivity.class);
+            playButtonAndLaunch(v, intent);
+        });
+
+        // Click largo en logo para confirmar logout
+        imgLogoLogout.setOnClickListener(v -> {
+            // Si no hay sesión, ir a Login
+            String logged = prefs.getString(KEY_LOGGED_IN, null);
+            if (logged == null) {
+                startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+                return;
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Cerrar sesión")
+                    .setMessage("¿Deseas cerrar sesión?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        prefs.edit().remove(KEY_LOGGED_IN).apply();
+                        Toast.makeText(MenuActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        // Click en botón textual para cerrar sesión (misma lógica que en la imagen)
+        btnLogout.setOnClickListener(v -> {
+            String logged = prefs.getString(KEY_LOGGED_IN, null);
+            if (logged == null) {
+                startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+                return;
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Cerrar sesión")
+                    .setMessage("¿Deseas cerrar sesión?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        prefs.edit().remove(KEY_LOGGED_IN).apply();
+                        Toast.makeText(MenuActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        // Ajustar visibilidad del botón puntuaciones y mostrar nombre de usuario si existe
+        updateScoresButtonVisibility(btnScores);
+        updateHeaderUser(txtUsername, imgLogoLogout);
+    }
+
+    private void playButtonAndLaunch(View v, Intent intent) {
+        // Animación simple al presionar
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.button_press_anim);
+        v.startAnimation(anim);
+
+        handler.postDelayed(() -> {
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Actividad no disponible", Toast.LENGTH_SHORT).show();
             }
-        });
-
-        // Ajustar visibilidad del botón puntuaciones y texto del login según sesión
-        updateScoresButtonVisibility(btnScores);
-        updateLoginButtonText(btnLogin);
+        }, 90); // pequeño delay para dejar ver la animación
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Button btnScores = findViewById(R.id.btnScores);
-        Button btnLogin = findViewById(R.id.btnLogin);
+        TextView txtUsername = findViewById(R.id.txtUsername);
+        ImageView imgLogoLogout = findViewById(R.id.imgLogoLogout);
+        Button btnLogout = findViewById(R.id.btnLogout);
         updateScoresButtonVisibility(btnScores);
-        updateLoginButtonText(btnLogin);
+        updateHeaderUser(txtUsername, imgLogoLogout);
     }
 
     private void updateScoresButtonVisibility(Button btnScores) {
@@ -116,13 +153,16 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLoginButtonText(Button btnLogin) {
-        if (btnLogin == null) return;
+    private void updateHeaderUser(TextView txtUsername, ImageView imgLogoLogout) {
         String logged = prefs.getString(KEY_LOGGED_IN, null);
         if (logged != null) {
-            btnLogin.setText("Cerrar sesión");
+            txtUsername.setText(logged);
+            if (!logged.isEmpty()) {
+                imgLogoLogout.setContentDescription(String.valueOf(logged.charAt(0)).toUpperCase());
+            }
         } else {
-            btnLogin.setText(R.string.login_signin);
+            txtUsername.setText(R.string.guest);
+            imgLogoLogout.setContentDescription(getString(R.string.avatar_letter));
         }
     }
 }

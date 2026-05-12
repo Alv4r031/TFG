@@ -76,10 +76,24 @@
     <string name="menu_memory">Juego de Memoria</string>
     <string name="menu_scores">Puntuaciones</string>
 
+    <!-- Nuevas cadenas para layouts personalizados -->
+    <string name="guest">Invitado</string>
+    <string name="games_title">Juegos</string>
+    <string name="continue_without_session">Continuar sin sesión</string>
+    <string name="avatar_letter">U</string>
+
     <!-- Strings para selector de dificultad -->
     <string name="select_difficulty">Selecciona dificultad</string>
     <string name="easy">Fácil</string>
     <string name="medium">Medio</string>
     <string name="hard">Difícil</string>
+
+    <!-- Texto para el botón de cerrar sesión -->
+    <string name="logout_text">Cerrar sesión</string>
+
+    <!-- Memory game strings -->
+    <string name="memory_start_with_count">%1$s (%2$d cartas)</string>
+    <string name="memory_progress_no_user">Inicia sesión para ver progreso</string>
+    <string name="memory_progress_next_threshold">Puntos para siguiente nivel: %1$d / %2$d</string>
 
 </resources>

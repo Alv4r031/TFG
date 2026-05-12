@@ -132,14 +132,12 @@
     <!-- Botón para volver al menú (ancho reducido) -->
     <Button
         android:id="@+id/btnBackToMenu"
-        style="@style/MenuButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="32dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:text="@string/back_to_menu"
-        android:textColor="@color/textColorPrimary" />
+        style="@style/LudoMixMenuButton"
+        android:text="@string/back_to_menu" />
+
+    <Button
+        android:id="@+id/btnResetRps"
+        style="@style/LudoMixMenuButton"
+        android:text="Reiniciar" />
 
 </LinearLayout>

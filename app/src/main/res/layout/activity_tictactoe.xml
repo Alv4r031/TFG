@@ -58,7 +58,7 @@
         <!-- Botón para volver al menú (ancho reducido) -->
         <Button
             android:id="@+id/btnBackToMenu"
-            style="@style/MenuButton"
+            style="@style/LudoMixMenuButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

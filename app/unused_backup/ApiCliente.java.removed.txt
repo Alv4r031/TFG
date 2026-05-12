@@ -1,0 +1,3 @@
+ApiCliente.java - removed on user request
+Original content not preserved (file was empty in repo at time of removal).
+If you need full history, retrieve from git history if available.

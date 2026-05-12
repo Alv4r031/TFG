@@ -4,24 +4,24 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:buttonStyle">@style/PrimaryButton</item>
+        <item name="android:buttonStyle">@style/LudoMixPrimaryButton</item>
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <!-- Botón primario (cian fondo, texto oscuro) reutilizable -->
-    <style name="PrimaryButton" parent="Widget.AppCompat.Button">
+    <style name="LudoMixPrimaryButton" parent="Widget.AppCompat.Button">
         <!-- Usar drawable con esquinas redondeadas -->
         <item name="android:background">@drawable/button_background</item>
-        <item name="android:textColor">@color/buttonText</item>
+        <item name="android:textColor">@color/buttonTextDark</item>
         <item name="android:padding">12dp</item>
     </style>
 
     <!-- Estilo para los botones del menú principal (relleno cian con texto oscuro) -->
-    <style name="MenuButton" parent="@style/PrimaryButton">
+    <style name="LudoMixMenuButton" parent="@style/LudoMixPrimaryButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">12dp</item>
-        <item name="android:textColor">@color/buttonText</item>
+        <item name="android:textColor">@color/buttonTextDark</item>
         <item name="android:textSize">18sp</item>
         <item name="android:padding">14dp</item>
     </style>
@@ -53,12 +53,12 @@
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
-    <style name="IconButton" parent="@style/PrimaryButton">
+    <style name="IconButton" parent="@style/LudoMixPrimaryButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">10dp</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/buttonText</item>
+        <item name="android:textColor">@color/buttonTextDark</item>
     </style>
 
 </resources>

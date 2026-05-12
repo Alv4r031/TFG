@@ -13,7 +13,7 @@
         android:padding="24dp">
 
         <ImageView
-            android:id="@+id/imgLogoLogin"
+            android:id="@+id/imgLogoRegister"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/ludomix_logo"
@@ -25,17 +25,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
+            android:text="@string/login_register"
             android:textColor="@color/cyan"
-            android:textSize="36sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:layout_marginTop="20dp"/>
 
         <EditText
-            android:id="@+id/etUser"
+            android:id="@+id/etNewUser"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="24dp"
             android:hint="@string/login_username_hint"
             android:inputType="textPersonName"
             android:autofillHints="username"
@@ -44,7 +44,19 @@
             android:background="@drawable/bg_input"/>
 
         <EditText
-            android:id="@+id/etPassword"
+            android:id="@+id/etNewEmail"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="16dp"
+            android:hint="@string/login_email_hint"
+            android:inputType="textEmailAddress"
+            android:autofillHints="emailAddress"
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray_text"
+            android:background="@drawable/bg_input"/>
+
+        <EditText
+            android:id="@+id/etNewPassword"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="16dp"
@@ -56,33 +68,14 @@
             android:background="@drawable/bg_input"/>
 
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btnCreate"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="24dp"
-            android:text="@string/login_signin"
+            android:text="@string/login_register"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:background="@drawable/bg_button_orange"/>
-
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/login_register"
-            android:textStyle="bold"
-            android:textColor="@color/background"
-            android:background="@drawable/bg_button_blue"/>
-
-        <TextView
-            android:id="@+id/linkContinue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/continue_without_session"
-            android:textColor="@color/cyan"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp" />
 
     </LinearLayout>
 

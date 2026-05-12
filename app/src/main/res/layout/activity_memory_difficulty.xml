@@ -18,55 +18,61 @@
 
     <Button
         android:id="@+id/btnEasy"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/easy"
         android:layout_marginBottom="4dp"
         android:background="@drawable/btn_orange_bg"
-        android:textColor="@color/textColorPrimary" />
+        android:textColor="@color/textColorPrimary"
+        style="@style/LudoMixMenuButton" />
 
     <TextView
         android:id="@+id/txtEasyStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="12sp"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="@color/textColorSecondary"
         android:layout_marginBottom="12dp" />
 
     <Button
         android:id="@+id/btnMedium"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/medium"
         android:layout_marginBottom="4dp"
         android:background="@drawable/btn_orange_bg"
-        android:textColor="@color/textColorPrimary" />
+        android:textColor="@color/textColorPrimary"
+        style="@style/LudoMixMenuButton" />
 
     <TextView
         android:id="@+id/txtMediumStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="12sp"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="@color/textColorSecondary"
         android:layout_marginBottom="12dp" />
 
     <Button
         android:id="@+id/btnHard"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/hard"
         android:layout_marginBottom="4dp"
         android:background="@drawable/btn_orange_bg"
-        android:textColor="@color/textColorPrimary" />
+        android:textColor="@color/textColorPrimary"
+        style="@style/LudoMixMenuButton" />
 
     <TextView
         android:id="@+id/txtHardStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="12sp"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="@color/textColorSecondary" />
 
     <!-- Botón para volver al menú -->
@@ -76,7 +82,7 @@
         android:layout_height="wrap_content"
         android:text="@string/generic_back"
         android:textColor="@color/textColorSecondary"
-        style="@style/MenuButton"
+        style="@style/LudoMixMenuButton"
         android:layout_marginTop="24dp" />
 
 </LinearLayout>

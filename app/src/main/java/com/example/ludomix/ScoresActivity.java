@@ -1,11 +1,13 @@
 package com.example.ludomix;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,7 +26,17 @@ public class ScoresActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scores);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) {
+            // Si no hay sesión, evitamos ver puntuaciones
+            Toast.makeText(this, "Debes iniciar sesión para ver las puntuaciones", Toast.LENGTH_SHORT).show();
+            // Volver al menú o login
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         // Inicializar DAOs
         usuarioDAO = new UsuarioDAO(this);
         usuarioDAO.open();
@@ -41,6 +53,14 @@ public class ScoresActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Revalidar sesión en resume
+        prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String username = prefs.getString(KEY_LOGGED_IN, null);
+        if (username == null) {
+            Toast.makeText(this, "Sesión caducada", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         loadStats();
     }
 
@@ -67,19 +87,18 @@ public class ScoresActivity extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
         
-        // Obtener información del usuario
+        // Obtener informacin del usuario
         Usuario usuario = usuarioDAO.obtenerUsuario(username);
         if (usuario != null) {
             sb.append("Usuario: ").append(usuario.getUsername()).append("\n");
             sb.append("Email: ").append(usuario.getEmail()).append("\n");
-            sb.append("Puntuación Total: ").append(puntuacionDAO.obtenerPuntosTotal(username)).append("\n\n");
+            sb.append("Puntuacin Total: ").append(puntuacionDAO.obtenerPuntosTotal(username)).append("\n\n");
         }
 
-        // Obtener puntuaciones por juego
         sb.append("=== PUNTUACIONES POR JUEGO ===\n\n");
         
-        String[] juegos = {"Piedra Papel Tijera", "Tres en Raya", "Adivina Número", "Memoria"};
-        
+        String[] juegos = {"Piedra Papel Tijera", "Tres en Raya", "Adivina Nmero", "Memoria"};
+
         for (String juego : juegos) {
             Cursor cursor = puntuacionDAO.obtenerPuntuacionesUsuario(username);
             int contador = 0;

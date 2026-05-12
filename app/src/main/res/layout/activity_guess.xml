@@ -55,14 +55,14 @@
 
     <Button
         android:id="@+id/btnCheck"
-        style="@style/MenuButton"
+        style="@style/LudoMixMenuButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/check_button" />
 
     <Button
         android:id="@+id/btnPlayAgain"
-        style="@style/MenuButton"
+        style="@style/LudoMixMenuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -71,7 +71,7 @@
     <!-- Botón para volver al menú (ancho reducido) -->
     <Button
         android:id="@+id/btnBackToMenu"
-        style="@style/MenuButton"
+        style="@style/LudoMixMenuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -84,7 +84,7 @@
     <!-- Botón para volver al selector de dificultad -->
     <Button
         android:id="@+id/btnBackToDifficulty"
-        style="@style/MenuButton"
+        style="@style/LudoMixMenuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

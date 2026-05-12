@@ -3,8 +3,8 @@
     <!-- Estado normal (carta boca abajo) -->
     <item android:state_enabled="true">
         <shape android:shape="rectangle">
-            <solid android:color="@color/colorPrimary"/>
-            <corners android:radius="8dp"/>
+            <solid android:color="@color/cyan"/>
+            <corners android:radius="12dp"/>
         </shape>
     </item>
     <!-- Estado deshabilitado (carta encontrada/emparejada) -->

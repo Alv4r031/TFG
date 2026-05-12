@@ -11,28 +11,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LudoMix">
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true">
+
+        <activity android:name=".SplashActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Registrar las actividades de los minijuegos -->
-        <activity android:name=".MenuActivity" />
-        <activity android:name=".GuessNumberActivity" />
-        <activity android:name=".RpsActivity" />
-        <activity android:name=".TicTacToeActivity" />
-        <activity android:name=".MemoryGameActivity" />
-        <activity android:name=".ModeSelectionActivity" />
-        <activity android:name=".GuessNumberDifficultyActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".MainMenuActivity" />
 
-        <!-- Nuevas actividades -->
-        <activity android:name=".ScoresActivity" />
-        <activity android:name=".MemoryDifficultyActivity" />
+        <!-- Mantener otras actividades originales si existen en el proyecto -->
+        <activity android:name=".MenuActivity" tools:ignore="Unused" />
+        <activity android:name=".GuessNumberActivity" tools:ignore="Unused" />
+        <activity android:name=".RpsActivity" tools:ignore="Unused" />
+        <activity android:name=".TicTacToeActivity" tools:ignore="Unused" />
+        <activity android:name=".MemoryGameActivity" tools:ignore="Unused" />
+        <activity android:name=".ModeSelectionActivity" tools:ignore="Unused" />
+        <activity android:name=".GuessNumberDifficultyActivity" tools:ignore="Unused" />
+        <activity android:name=".ScoresActivity" tools:ignore="Unused" />
+        <activity android:name=".MemoryDifficultyActivity" tools:ignore="Unused" />
 
     </application>
 

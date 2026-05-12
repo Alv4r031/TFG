@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="L"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/cyan"
+            android:background="@drawable/bg_circle_logo"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MINIJUEGOS"
+            android:textColor="@color/orange"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Adivina el número"
+            android:background="@drawable/bg_button_blue"
+            android:textStyle="bold"
+            android:textColor="@color/background"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Piedra Papel Tijera"
+            android:background="@drawable/bg_button_blue"
+            android:textStyle="bold"
+            android:textColor="@color/background"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Tres en Raya"
+            android:background="@drawable/bg_button_blue"
+            android:textStyle="bold"
+            android:textColor="@color/background"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Juego de Memoria"
+            android:background="@drawable/bg_button_blue"
+            android:textStyle="bold"
+            android:textColor="@color/background"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +27,7 @@ public class MemoryGameActivity extends AppCompatActivity {
     private int difficulty = MemoryDifficultyActivity.DIFF_MEDIUM;
     private String difficultyName = "Medio";
     private final List<String> cardValues = new ArrayList<>();
+    @SuppressWarnings("unused")
     private final List<Button> cards = new ArrayList<>();
 
     private Button firstCard = null;
@@ -57,12 +60,8 @@ public class MemoryGameActivity extends AppCompatActivity {
 
         statusTextView = findViewById(R.id.txtMemoryStatus);
         memoryGrid = findViewById(R.id.memoryGrid);
-        int resIdProgress = getResources().getIdentifier("txtMemoryProgress", "id", getPackageName());
-        if (resIdProgress != 0) {
-            txtMemoryProgress = findViewById(resIdProgress);
-        } else {
-            txtMemoryProgress = null; // layout variante no contiene el id
-        }
+        // Direct findViewById is fine; if the view doesn't exist it will be null
+        txtMemoryProgress = findViewById(R.id.txtMemoryProgress);
 
         Button btnBack = findViewById(R.id.btnBackToMenu);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
@@ -191,8 +190,13 @@ public class MemoryGameActivity extends AppCompatActivity {
             card.setLayoutParams(params);
 
             // Ajustes de texto y apariencia
-            card.setTextSize(TypedValue.COMPLEX_UNIT_SP, Math.max(12, sizeDp / 4));
-            card.setTextColor(getResources().getColor(android.R.color.black));
+            // Emphasize emoji size: larger, with min/max bounds
+            // calcular tamaño de emoji en sp en función del tamaño de la carta
+            float emojiSizeSp = sizeDp / 2.5f;
+            if (emojiSizeSp < 18f) emojiSizeSp = 18f;
+            if (emojiSizeSp > 40f) emojiSizeSp = 40f;
+            card.setTextSize(TypedValue.COMPLEX_UNIT_SP, emojiSizeSp);
+            card.setTextColor(ContextCompat.getColor(this, android.R.color.black));
             card.setBackgroundResource(R.drawable.card_background);
             card.setText(""); // Ocultar el contenido hasta que se revele
             card.setMinWidth(sizePx);
@@ -207,7 +211,7 @@ public class MemoryGameActivity extends AppCompatActivity {
         memoryGrid.invalidate();
 
         // Debug: actualizar status con número de cartas añadidas
-        statusTextView.setText(getString(R.string.memory_start_prompt) + " (" + memoryGrid.getChildCount() + " cartas)");
+        statusTextView.setText(getString(R.string.memory_start_with_count, getString(R.string.memory_start_prompt), memoryGrid.getChildCount()));
     }
 
     public void revealCard(View view) {
@@ -241,7 +245,7 @@ public class MemoryGameActivity extends AppCompatActivity {
         Object tag2 = secondCard.getTag();
 
         // Si ambas cartas tienen tag y son iguales y no son comodín => es un par
-        if (tag1 != null && tag2 != null && tag1.equals(tag2) && !"★".equals(tag1)) {
+        if (tag1 != null && tag1.equals(tag2) && !"★".equals(tag1)) {
             // ¡Es un par! (sin mostrar texto en pantalla)
             firstCard.setEnabled(false); // Deshabilita para que no se pueda volver a pulsar
             secondCard.setEnabled(false);
@@ -262,7 +266,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                     prefs.edit().putInt("plays_memory", plays + 1).putInt("wins_memory", wins + 1).apply();
                     Toast.makeText(this, "Estadísticas actualizadas", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("MemoryGameActivity", "Error actualizando estadísticas", e);
                 }
 
                 // Guardar puntuación según dificultad
@@ -371,7 +375,7 @@ public class MemoryGameActivity extends AppCompatActivity {
         if (txtMemoryProgress == null) return;
         String username = prefs.getString(KEY_LOGGED_IN, null);
         if (username == null) {
-            txtMemoryProgress.setText("Inicia sesión para ver progreso");
+            txtMemoryProgress.setText(getString(R.string.memory_progress_no_user));
             return;
         }
 
@@ -404,6 +408,6 @@ public class MemoryGameActivity extends AppCompatActivity {
         }
 
         // Mostrar en formato sencillo solicitado
-        txtMemoryProgress.setText("Puntos para siguiente nivel: " + totalMemoria + " / " + siguienteUmbral);
+        txtMemoryProgress.setText(getString(R.string.memory_progress_next_threshold, totalMemoria, siguienteUmbral));
     }
 }
