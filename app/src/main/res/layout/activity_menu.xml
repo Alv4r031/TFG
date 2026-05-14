@@ -79,6 +79,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/topBar" />
 
+    <!-- Botón para invitar a iniciar sesión/registrarse cuando el usuario es invitado -->
+    <Button
+        android:id="@+id/btnAuth"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_button_blue"
+        android:text="@string/login_signin"
+        android:textColor="@color/buttonTextLight"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topBar"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"

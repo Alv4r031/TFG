@@ -261,6 +261,16 @@ public class GuessNumberActivity extends AppCompatActivity {
             puntuacionDAO.open();
         }
 
+        // Calcular total antes de insertar para comprobar hitos
+        int antesTotal = 0;
+        android.database.Cursor cursorBefore = puntuacionDAO.obtenerPuntuacionesUsuario(username);
+        if (cursorBefore != null && cursorBefore.moveToFirst()) {
+            do {
+                antesTotal += cursorBefore.getInt(cursorBefore.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+            } while (cursorBefore.moveToNext());
+            cursorBefore.close();
+        }
+
         Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
         boolean ok = false;
         try {
@@ -277,6 +287,9 @@ public class GuessNumberActivity extends AppCompatActivity {
                 usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
             Toast.makeText(this, "+" + puntos + " puntos guardados", Toast.LENGTH_SHORT).show();
+            // Comprobar si se alcanzaron hitos de puntos totales
+            int despuesTotal = antesTotal + puntos;
+            ScoreMilestones.checkMilestones(this, username, antesTotal, despuesTotal);
             updateGuessProgress();
         } else {
             Toast.makeText(this, "No se pudo guardar la puntuación", Toast.LENGTH_SHORT).show();

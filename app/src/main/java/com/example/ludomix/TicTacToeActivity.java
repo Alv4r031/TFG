@@ -244,12 +244,27 @@ public class TicTacToeActivity extends AppCompatActivity {
         String username = prefs.getString(KEY_LOGGED_IN, null);
         if (username == null) return;
 
+        int antesTotal = 0;
+        if (puntuacionDAO == null) {
+            puntuacionDAO = new PuntuacionDAO(this);
+            puntuacionDAO.open();
+        }
+        android.database.Cursor cursorBefore = puntuacionDAO.obtenerPuntuacionesUsuario(username);
+        if (cursorBefore != null && cursorBefore.moveToFirst()) {
+            do {
+                antesTotal += cursorBefore.getInt(cursorBefore.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
+            } while (cursorBefore.moveToNext());
+            cursorBefore.close();
+        }
+
         Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
         if (puntuacionDAO.registrarPuntuacion(puntuacion)) {
             Usuario usuario = usuarioDAO.obtenerUsuario(username);
             if (usuario != null) {
                 usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
+            int despuesTotal = antesTotal + puntos;
+            ScoreMilestones.checkMilestones(this, username, antesTotal, despuesTotal);
         }
     }
 

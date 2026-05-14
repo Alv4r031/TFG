@@ -30,9 +30,9 @@ public class TicTacToeDifficultyActivity extends AppCompatActivity {
         usuarioDAO = new UsuarioDAO(this);
         usuarioDAO.open();
 
-        Button btnEasy = findViewById(R.id.btnTTTEasy);
-        Button btnMedium = findViewById(R.id.btnTTTMedium);
-        Button btnHard = findViewById(R.id.btnTTTHard);
+        Button btnEasy = findViewById(R.id.btnEasy);
+        Button btnMedium = findViewById(R.id.btnMedium);
+        Button btnHard = findViewById(R.id.btnHard);
         Button btnBack = findViewById(R.id.btnBack);
 
         TextView txtEasyStatus = findViewById(R.id.txtEasyStatus);

@@ -37,6 +37,7 @@ public class MenuActivity extends AppCompatActivity {
         Button btnTicTacToe = findViewById(R.id.btnTicTacToe);
         Button btnMemoryGame = findViewById(R.id.btnMemoryGame);
         Button btnScores = findViewById(R.id.btnScores);
+        Button btnAuth = findViewById(R.id.btnAuth);
         TextView txtUsername = findViewById(R.id.txtUsername);
         ImageView imgLogoLogout = findViewById(R.id.imgLogoLogout);
         Button btnLogout = findViewById(R.id.btnLogout);
@@ -64,6 +65,12 @@ public class MenuActivity extends AppCompatActivity {
         btnScores.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, ScoresActivity.class);
             playButtonAndLaunch(v, intent);
+        });
+
+        // Si el usuario es invitado, mostrar botón de autenticar; si está logueado, ocultarlo
+        btnAuth.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
 
         // Click largo en logo para confirmar logout
@@ -114,7 +121,7 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         // Ajustar visibilidad del botón puntuaciones y mostrar nombre de usuario si existe
-        updateScoresButtonVisibility(btnScores);
+        updateScoresButtonVisibility(btnScores, btnAuth);
         updateHeaderUser(txtUsername, imgLogoLogout);
     }
 
@@ -136,20 +143,23 @@ public class MenuActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Button btnScores = findViewById(R.id.btnScores);
+        Button btnAuth = findViewById(R.id.btnAuth);
         TextView txtUsername = findViewById(R.id.txtUsername);
         ImageView imgLogoLogout = findViewById(R.id.imgLogoLogout);
         Button btnLogout = findViewById(R.id.btnLogout);
-        updateScoresButtonVisibility(btnScores);
+        updateScoresButtonVisibility(btnScores, btnAuth);
         updateHeaderUser(txtUsername, imgLogoLogout);
     }
 
-    private void updateScoresButtonVisibility(Button btnScores) {
+    private void updateScoresButtonVisibility(Button btnScores, Button btnAuth) {
         if (btnScores == null) return;
         String logged = prefs.getString(KEY_LOGGED_IN, null);
         if (logged != null) {
             btnScores.setVisibility(Button.VISIBLE);
+            if (btnAuth != null) btnAuth.setVisibility(Button.GONE);
         } else {
             btnScores.setVisibility(Button.GONE);
+            if (btnAuth != null) btnAuth.setVisibility(Button.VISIBLE);
         }
     }
 

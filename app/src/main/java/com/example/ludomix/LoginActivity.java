@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         EditText etUser = findViewById(R.id.etUser);
         EditText etPassword = findViewById(R.id.etPassword);
+        TextView linkContinue = findViewById(R.id.linkContinue);
 
         btnLogin.setOnClickListener(v -> {
             String username = etUser.getText().toString().trim();
@@ -68,6 +70,14 @@ public class LoginActivity extends AppCompatActivity {
             );
 
             startActivity(intent);
+        });
+
+        // Continuar sin sesión: ir a menú sin guardar usuario
+        linkContinue.setOnClickListener(v -> {
+            Toast.makeText(this, "Continuando como invitado", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
