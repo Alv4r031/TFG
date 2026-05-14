@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "ludomix.db";
-    private static final int DATABASE_VERSION = 1;
+    // Aumentamos la versión para que la modificación del tipo de columna sea aplicada (recrea tablas)
+    private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_USUARIOS = "usuarios";
     public static final String COLUMN_ID = "id";
@@ -20,6 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PUNTUACION_USERNAME = "username";
     public static final String COLUMN_PUNTUACION_PUNTOS = "puntos";
     public static final String COLUMN_PUNTUACION_JUEGO = "juego";
+    // Usar INTEGER para la fecha (timestamp) en SQLite
     public static final String COLUMN_PUNTUACION_FECHA = "fecha";
 
     private static final String CREATE_TABLE_USUARIOS =
@@ -36,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_PUNTUACION_USERNAME + " TEXT NOT NULL, " +
                     COLUMN_PUNTUACION_PUNTOS + " INTEGER NOT NULL, " +
                     COLUMN_PUNTUACION_JUEGO + " TEXT NOT NULL, " +
-                    COLUMN_PUNTUACION_FECHA + " LONG NOT NULL, " +
+                    COLUMN_PUNTUACION_FECHA + " INTEGER NOT NULL, " +
                     "FOREIGN KEY(" + COLUMN_PUNTUACION_USERNAME + ") REFERENCES " + TABLE_USUARIOS + "(" + COLUMN_USERNAME + "))";
 
     public DatabaseHelper(Context context) {
@@ -51,10 +53,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Simple upgrade: borrar y recrear (en desarrollo está bien, en prod habría migración)
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PUNTUACIONES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USUARIOS);
         onCreate(db);
     }
 }
-
-

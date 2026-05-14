@@ -174,18 +174,28 @@ public class GuessNumberActivity extends AppCompatActivity {
                         puntos = 50;
                     }
                 }
+
                 // Antes de guardar, comprobar puntos totales actuales para detectar desbloqueo
-                PuntuacionDAO dao = new PuntuacionDAO(this);
-                dao.open();
                 int antesTotal = 0;
                 String username = prefs.getString(KEY_LOGGED_IN, null);
                 if (username != null) {
-                    android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+                    if (puntuacionDAO == null) {
+                        puntuacionDAO = new PuntuacionDAO(this);
+                        puntuacionDAO.open();
+                    } else if (puntuacionDAO != null) {
+                        try {
+                            // Ensure DB open
+                            puntuacionDAO.open();
+                        } catch (Exception ignored) {}
+                    }
+
+                    android.database.Cursor cursor = puntuacionDAO.obtenerPuntuacionesUsuario(username);
+                    String expectedJuego = "Adivina Número - " + difficultyName; // usar mismo formato que updateGuessProgress
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
                             String juego = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO));
                             int pts = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS));
-                            if (("Adivina Número - Fácil".equals(juego) && difficulty == GuessNumberDifficultyActivity.DIFF_EASY) || ("Adivina Número - Medio".equals(juego) && difficulty == GuessNumberDifficultyActivity.DIFF_MEDIUM)) {
+                            if (juego != null && juego.trim().equals(expectedJuego)) {
                                 antesTotal += pts;
                             }
                         } while (cursor.moveToNext());
@@ -193,6 +203,7 @@ public class GuessNumberActivity extends AppCompatActivity {
                     }
                 }
 
+                // Guardar la puntuación usando el DAO de instancia
                 guardarPuntuacion(juegoName, puntos);
 
                 // Después de guardar, comprobar si se ha cruzado el umbral
@@ -202,7 +213,7 @@ public class GuessNumberActivity extends AppCompatActivity {
                 } else if (difficulty == GuessNumberDifficultyActivity.DIFF_MEDIUM && antesTotal < 1000 && despuesTotal >= 1000) {
                     Toast.makeText(this, "¡Has desbloqueado el nivel Difícil!", Toast.LENGTH_LONG).show();
                 }
-                dao.close();
+
                 updateGuessProgress();
 
             } else if (guess < secretNumber) {
@@ -238,16 +249,37 @@ public class GuessNumberActivity extends AppCompatActivity {
 
     private void guardarPuntuacion(String juego, int puntos) {
         String username = prefs.getString(KEY_LOGGED_IN, null);
-        if (username == null) return;
+        if (username == null) {
+            // Informar que no se guardó por falta de sesión
+            Toast.makeText(this, "No has iniciado sesión: puntuación no guardada", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Asegurarnos de que el DAO esté abierto
+        if (puntuacionDAO == null) {
+            puntuacionDAO = new PuntuacionDAO(this);
+            puntuacionDAO.open();
+        }
 
         Puntuacion puntuacion = new Puntuacion(username, puntos, juego);
-        if (puntuacionDAO.registrarPuntuacion(puntuacion)) {
+        boolean ok = false;
+        try {
+            ok = puntuacionDAO.registrarPuntuacion(puntuacion);
+        } catch (Exception e) {
+            // no hacer crash, mostrar mensaje
+            Toast.makeText(this, "Error guardando puntuación", Toast.LENGTH_SHORT).show();
+        }
+
+        if (ok) {
+            // Actualizar la puntuación acumulada en la tabla usuarios
             Usuario usuario = usuarioDAO.obtenerUsuario(username);
             if (usuario != null) {
                 usuarioDAO.actualizarPuntuacion(username, usuario.getPuntuacion() + puntos);
             }
             Toast.makeText(this, "+" + puntos + " puntos guardados", Toast.LENGTH_SHORT).show();
             updateGuessProgress();
+        } else {
+            Toast.makeText(this, "No se pudo guardar la puntuación", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -278,11 +310,14 @@ public class GuessNumberActivity extends AppCompatActivity {
             return;
         }
 
-        // Sumar puntos de Adivina Número
-        PuntuacionDAO dao = new PuntuacionDAO(this);
-        dao.open();
+        // Sumar puntos de Adivina Número usando el DAO de instancia
+        if (puntuacionDAO == null) {
+            puntuacionDAO = new PuntuacionDAO(this);
+            puntuacionDAO.open();
+        }
+
         int total = 0;
-        android.database.Cursor cursor = dao.obtenerPuntuacionesUsuario(username);
+        android.database.Cursor cursor = puntuacionDAO.obtenerPuntuacionesUsuario(username);
         String expectedJuego = "Adivina Número - " + difficultyName; // sumar solo para la dificultad actual
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -293,7 +328,6 @@ public class GuessNumberActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
             cursor.close();
         }
-        dao.close();
 
         int siguienteUmbral = Integer.MAX_VALUE;
         if (difficulty == GuessNumberDifficultyActivity.DIFF_EASY) siguienteUmbral = 500;

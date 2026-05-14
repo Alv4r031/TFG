@@ -87,17 +87,18 @@ public class ScoresActivity extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
         
-        // Obtener informacin del usuario
+        // Obtener información del usuario
         Usuario usuario = usuarioDAO.obtenerUsuario(username);
         if (usuario != null) {
             sb.append("Usuario: ").append(usuario.getUsername()).append("\n");
             sb.append("Email: ").append(usuario.getEmail()).append("\n");
-            sb.append("Puntuacin Total: ").append(puntuacionDAO.obtenerPuntosTotal(username)).append("\n\n");
+            sb.append("Puntuación Total: ").append(puntuacionDAO.obtenerPuntosTotal(username)).append("\n\n");
         }
 
         sb.append("=== PUNTUACIONES POR JUEGO ===\n\n");
         
-        String[] juegos = {"Piedra Papel Tijera", "Tres en Raya", "Adivina Nmero", "Memoria"};
+        // Usamos nombres base de los juegos; 'Adivina Número' se guardó como 'Adivina Número - <Dificultad>'
+        String[] juegos = {"Piedra Papel Tijera", "Tres en Raya", "Adivina Número", "Memoria"};
 
         for (String juego : juegos) {
             Cursor cursor = puntuacionDAO.obtenerPuntuacionesUsuario(username);
@@ -109,7 +110,7 @@ public class ScoresActivity extends AppCompatActivity {
                     String juegoDb = cursor.getString(
                             cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_JUEGO)
                     );
-                    if (juegoDb.contains(juego)) {
+                    if (juegoDb != null && juegoDb.contains(juego)) {
                         contador++;
                         int puntos = cursor.getInt(
                                 cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS)

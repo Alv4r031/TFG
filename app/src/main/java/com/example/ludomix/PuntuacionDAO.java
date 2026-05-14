@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class PuntuacionDAO {
     private DatabaseHelper dbHelper;
@@ -18,21 +19,30 @@ public class PuntuacionDAO {
     }
 
     public void close() {
-        dbHelper.close();
+        if (dbHelper != null) dbHelper.close();
     }
 
     /**
      * Registra una nueva puntuación
      */
     public boolean registrarPuntuacion(Puntuacion puntuacion) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_PUNTUACION_USERNAME, puntuacion.getUsername());
-        values.put(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS, puntuacion.getPuntos());
-        values.put(DatabaseHelper.COLUMN_PUNTUACION_JUEGO, puntuacion.getJuego());
-        values.put(DatabaseHelper.COLUMN_PUNTUACION_FECHA, puntuacion.getFecha());
+        try {
+            if (db == null || !db.isOpen()) {
+                open();
+            }
 
-        long resultado = db.insert(DatabaseHelper.TABLE_PUNTUACIONES, null, values);
-        return resultado != -1;
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COLUMN_PUNTUACION_USERNAME, puntuacion.getUsername());
+            values.put(DatabaseHelper.COLUMN_PUNTUACION_PUNTOS, puntuacion.getPuntos());
+            values.put(DatabaseHelper.COLUMN_PUNTUACION_JUEGO, puntuacion.getJuego());
+            values.put(DatabaseHelper.COLUMN_PUNTUACION_FECHA, puntuacion.getFecha());
+
+            long resultado = db.insert(DatabaseHelper.TABLE_PUNTUACIONES, null, values);
+            return resultado != -1;
+        } catch (Exception e) {
+            Log.e("PuntuacionDAO", "Error al registrar puntuacion", e);
+            return false;
+        }
     }
 
     /**
@@ -114,4 +124,3 @@ public class PuntuacionDAO {
         return rowsAffected > 0;
     }
 }
-
