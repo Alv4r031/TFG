@@ -33,6 +33,7 @@
         <activity android:name=".GuessNumberDifficultyActivity" tools:ignore="Unused" />
         <activity android:name=".ScoresActivity" tools:ignore="Unused" />
         <activity android:name=".MemoryDifficultyActivity" tools:ignore="Unused" />
+        <activity android:name=".TicTacToeDifficultyActivity" tools:ignore="Unused" />
 
     </application>
 

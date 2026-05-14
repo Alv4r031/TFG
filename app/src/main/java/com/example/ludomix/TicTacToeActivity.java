@@ -23,6 +23,7 @@ public class TicTacToeActivity extends AppCompatActivity {
 
     public static final String EXTRA_GAME_MODE = "EXTRA_GAME_MODE";
     public static final String EXTRA_HUMAN_IS_X = "EXTRA_HUMAN_IS_X";
+    public static final String EXTRA_DIFFICULTY = "EXTRA_DIFFICULTY"; // nuevo extra
 
     private Button[] buttons = new Button[9];
     private boolean playerXTurn = true; // True = X, False = O
@@ -34,6 +35,9 @@ public class TicTacToeActivity extends AppCompatActivity {
     private String gameMode = "PVP"; // "PVP" or "PVC"
     private boolean humanIsX = true; // meaningful only if PVC
 
+    // Dificultad de IA (si aplica)
+    private int tttDifficulty = 0; // 0=Fácil,1=Medio,2=Difícil
+
     private Random random = new Random();
     private SharedPreferences prefs;
     private static final String PREFS = "ludomix_prefs";
@@ -44,7 +48,7 @@ public class TicTacToeActivity extends AppCompatActivity {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideOverlayRunnable; // runnable cancelable para ocultar overlay
-    private long overlayShownAt = 0L; // timestamp de la última vez que se mostró el overlay (uptimeMillis)
+    private long overlayShownAt = 0L; // timestamp de la última vez se mostró overlay (uptimeMillis)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +74,15 @@ public class TicTacToeActivity extends AppCompatActivity {
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());
 
         // Read intent extras
-        if (getIntent() != null && getIntent().getStringExtra(EXTRA_GAME_MODE) != null) {
-            gameMode = getIntent().getStringExtra(EXTRA_GAME_MODE);
-            if ("PVC".equals(gameMode)) {
-                humanIsX = getIntent().getBooleanExtra(EXTRA_HUMAN_IS_X, true);
+        if (getIntent() != null) {
+            if (getIntent().getStringExtra(EXTRA_GAME_MODE) != null) {
+                gameMode = getIntent().getStringExtra(EXTRA_GAME_MODE);
+                if ("PVC".equals(gameMode)) {
+                    humanIsX = getIntent().getBooleanExtra(EXTRA_HUMAN_IS_X, true);
+                }
             }
+            // Leer dificultad enviada por TicTacToeDifficultyActivity (si existe)
+            tttDifficulty = getIntent().getIntExtra(EXTRA_DIFFICULTY, 0);
         }
 
         // Restore state if needed
@@ -83,6 +91,7 @@ public class TicTacToeActivity extends AppCompatActivity {
             humanIsX = savedInstanceState.getBoolean(EXTRA_HUMAN_IS_X, humanIsX);
             playerXTurn = savedInstanceState.getBoolean("playerXTurn", playerXTurn);
             turnCount = savedInstanceState.getInt("turnCount", turnCount);
+            tttDifficulty = savedInstanceState.getInt(EXTRA_DIFFICULTY, tttDifficulty);
         }
 
         // Initialize status text
@@ -211,10 +220,12 @@ public class TicTacToeActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                guardarPuntuacion("Tres en Raya", 20);
+                int puntosAward = (tttDifficulty == 0) ? 25 : (tttDifficulty == 1) ? 100 : 500;
+                guardarPuntuacion("Tres en Raya - " + difficultyName(), puntosAward);
             }
         } else if (message != null && !message.equals(getString(R.string.game_draw))) {
-            guardarPuntuacion("Tres en Raya", 20);
+            int puntosAward = (tttDifficulty == 0) ? 25 : (tttDifficulty == 1) ? 100 : 500;
+            guardarPuntuacion("Tres en Raya - " + difficultyName(), puntosAward);
         }
     }
 
@@ -276,7 +287,11 @@ public class TicTacToeActivity extends AppCompatActivity {
     }
 
     private void cpuMakeMove() {
-        // Movimiento sencillo: elegir una celda vacía al azar
+        // Movimiento según dificultad:
+        // 0 - Fácil: aleatorio
+        // 1 - Medio: intentar ganar; si no, bloquear; si no, aleatorio
+        // 2 - Difícil: ganar > bloquear > centro > esquinas > lados
+
         List<Integer> emptyIndexes = new ArrayList<>();
         for (int i = 0; i < buttons.length; i++) {
             if (buttons[i].getText().toString().equals("")) {
@@ -285,7 +300,40 @@ public class TicTacToeActivity extends AppCompatActivity {
         }
         if (emptyIndexes.isEmpty()) return;
 
-        int choice = emptyIndexes.get(random.nextInt(emptyIndexes.size()));
+        int choice = -1;
+
+        if (tttDifficulty == 0) {
+            // Fácil: aleatorio
+            choice = emptyIndexes.get(random.nextInt(emptyIndexes.size()));
+        } else if (tttDifficulty == 1) {
+            // Medio: intentar ganar o bloquear
+            choice = findWinningMoveFor(getCpuMark());
+            if (choice == -1) choice = findWinningMoveFor(getHumanMark()); // bloquear
+            if (choice == -1) choice = emptyIndexes.get(random.nextInt(emptyIndexes.size()));
+        } else {
+            // Difícil: ganar > bloquear > centro > esquinas > lados
+            choice = findWinningMoveFor(getCpuMark());
+            if (choice == -1) choice = findWinningMoveFor(getHumanMark());
+            if (choice == -1 && buttons[4].getText().toString().equals("")) choice = 4; // centro
+            if (choice == -1) {
+                // esquinas
+                int[] corners = {0,2,6,8};
+                List<Integer> availableCorners = new ArrayList<>();
+                for (int c : corners) if (buttons[c].getText().toString().equals("")) availableCorners.add(c);
+                if (!availableCorners.isEmpty()) choice = availableCorners.get(random.nextInt(availableCorners.size()));
+            }
+            if (choice == -1) {
+                // lados
+                int[] sides = {1,3,5,7};
+                List<Integer> availableSides = new ArrayList<>();
+                for (int s : sides) if (buttons[s].getText().toString().equals("")) availableSides.add(s);
+                if (!availableSides.isEmpty()) choice = availableSides.get(random.nextInt(availableSides.size()));
+            }
+            if (choice == -1) choice = emptyIndexes.get(random.nextInt(emptyIndexes.size()));
+        }
+
+        if (choice == -1) return;
+
         Button button = buttons[choice];
 
         // CPU juega la pieza correspondiente al turno actual
@@ -314,6 +362,58 @@ public class TicTacToeActivity extends AppCompatActivity {
         }
     }
 
+    // Helpers para IA: obtener marcas
+    private String getCpuMark() {
+        if (gameMode.equals("PVC")) {
+            // Si humano es X, CPU es O
+            return humanIsX ? "O" : "X";
+        }
+        // En PVP no aplica, pero por seguridad devolvemos O
+        return "O";
+    }
+
+    private String getHumanMark() {
+        if (gameMode.equals("PVC")) {
+            return humanIsX ? "X" : "O";
+        }
+        return "X";
+    }
+
+    // Busca movimiento que permita ganar para marca dada, o -1 si no existe
+    private int findWinningMoveFor(String mark) {
+        // simulamos colocar mark en cada vacío y comprobamos si produce victoria
+        for (int i = 0; i < buttons.length; i++) {
+            if (!buttons[i].getText().toString().equals("")) continue;
+            buttons[i].setText(mark);
+            boolean win = simulateCheckWin();
+            buttons[i].setText("");
+            if (win) return i;
+        }
+        return -1;
+    }
+
+    // Reusa lógica de checkForWin pero sobre el tablero actual (sin cambiar botones)
+    private boolean simulateCheckWin() {
+        String[][] field = new String[3][3];
+        for (int i = 0; i < buttons.length; i++) field[i / 3][i % 3] = buttons[i].getText().toString();
+
+        for (int i = 0; i < 3; i++) {
+            if (field[i][0].equals(field[i][1]) && field[i][0].equals(field[i][2]) && !field[i][0].equals("")) return true;
+            if (field[0][i].equals(field[1][i]) && field[0][i].equals(field[2][i]) && !field[0][i].equals("")) return true;
+        }
+        if (field[0][0].equals(field[1][1]) && field[0][0].equals(field[2][2]) && !field[0][0].equals("")) return true;
+        if (field[0][2].equals(field[1][1]) && field[0][2].equals(field[2][0]) && !field[0][2].equals("")) return true;
+        return false;
+    }
+
+    private String difficultyName() {
+        switch (tttDifficulty) {
+            case 0: return "Fácil";
+            case 1: return "Medio";
+            default: return "Difícil";
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -321,6 +421,7 @@ public class TicTacToeActivity extends AppCompatActivity {
         outState.putBoolean(EXTRA_HUMAN_IS_X, humanIsX);
         outState.putBoolean("playerXTurn", playerXTurn);
         outState.putInt("turnCount", turnCount);
+        outState.putInt(EXTRA_DIFFICULTY, tttDifficulty);
     }
 
     @Override

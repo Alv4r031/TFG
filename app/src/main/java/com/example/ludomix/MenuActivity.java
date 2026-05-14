@@ -52,7 +52,7 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         btnTicTacToe.setOnClickListener(v -> {
-            Intent intent = new Intent(MenuActivity.this, ModeSelectionActivity.class);
+            Intent intent = new Intent(MenuActivity.this, TicTacToeDifficultyActivity.class);
             playButtonAndLaunch(v, intent);
         });
 

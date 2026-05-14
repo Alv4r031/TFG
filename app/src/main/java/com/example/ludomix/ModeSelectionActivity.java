@@ -19,9 +19,13 @@ public class ModeSelectionActivity extends AppCompatActivity {
         Button btnPvc = findViewById(R.id.button_pvc);
         Button btnBack = findViewById(R.id.button_back_menu);
 
+        // Leer dificultad si la recibió
+        int difficulty = getIntent().getIntExtra(TicTacToeDifficultyActivity.EXTRA_DIFFICULTY, TicTacToeDifficultyActivity.DIFF_EASY);
+
         btnPvp.setOnClickListener(v -> {
             Intent intent = new Intent(ModeSelectionActivity.this, TicTacToeActivity.class);
             intent.putExtra(TicTacToeActivity.EXTRA_GAME_MODE, "PVP");
+            intent.putExtra(TicTacToeDifficultyActivity.EXTRA_DIFFICULTY, difficulty);
             startActivity(intent);
         });
 
@@ -30,6 +34,7 @@ public class ModeSelectionActivity extends AppCompatActivity {
             Intent intent = new Intent(ModeSelectionActivity.this, TicTacToeActivity.class);
             intent.putExtra(TicTacToeActivity.EXTRA_GAME_MODE, "PVC");
             intent.putExtra(TicTacToeActivity.EXTRA_HUMAN_IS_X, humanIsX);
+            intent.putExtra(TicTacToeDifficultyActivity.EXTRA_DIFFICULTY, difficulty);
             startActivity(intent);
         });
 

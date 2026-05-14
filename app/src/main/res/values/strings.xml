@@ -96,4 +96,10 @@
     <string name="memory_progress_no_user">Inicia sesión para ver progreso</string>
     <string name="memory_progress_next_threshold">Puntos para siguiente nivel: %1$d / %2$d</string>
 
+    <!-- TicTacToe difficulty strings -->
+    <string name="ttt_points_status">Puntos: %1$d / %2$d</string>
+    <string name="ttt_locked_need">Bloqueado - Necesitas %1$d puntos en %2$s</string>
+    <string name="ttt_unlocked">Desbloqueado</string>
+    <string name="ttt_award_points">Ganar otorga %1$d puntos</string>
+
 </resources>
